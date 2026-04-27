@@ -13,9 +13,12 @@ import com.example.foodorderapp.data.model.Category
 import com.example.foodorderapp.data.model.Food
 import com.example.foodorderapp.data.remote.FirebaseHelper
 import com.example.foodorderapp.databinding.FragmentHomeBinding
-import com.example.foodorderapp.ui.buyer.adapter.CategoryAdapter
+//import com.example.foodorderapp.ui.buyer.adapter.CategoryAdapter
 import com.example.foodorderapp.ui.buyer.adapter.FoodAdapter
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
+import com.example.foodorderapp.R
 
 class HomeFragment : Fragment() {
 
@@ -24,7 +27,7 @@ class HomeFragment : Fragment() {
 
     private val TAG = "HomeFragment"
 
-    private lateinit var categoryAdapter: CategoryAdapter
+//    private lateinit var categoryAdapter: CategoryAdapter
     private lateinit var foodAdapter: FoodAdapter
 
     private val categories = mutableListOf<Category>()
@@ -70,15 +73,15 @@ class HomeFragment : Fragment() {
 
     private fun setupRecyclerViews() {
         // Category RecyclerView
-        categoryAdapter = CategoryAdapter(categories) { category ->
-            selectedCategoryId = category.id
-            filterFoodsByCategory(category)
-        }
-        binding.rvCategories.apply {
-            layoutManager = LinearLayoutManager(
-                requireContext(), LinearLayoutManager.HORIZONTAL, false)
-            adapter = categoryAdapter
-        }
+//        categoryAdapter = CategoryAdapter(categories) { category ->
+//            selectedCategoryId = category.id
+//            filterFoodsByCategory(category)
+//        }
+//        binding.rvCategories.apply {
+//            layoutManager = LinearLayoutManager(
+//                requireContext(), LinearLayoutManager.HORIZONTAL, false)
+//            adapter = categoryAdapter
+//        }
 
         // Food RecyclerView
         foodAdapter = FoodAdapter(emptyList()) { food ->
@@ -99,7 +102,6 @@ class HomeFragment : Fragment() {
     private fun startListeningToCategories() {
         categoriesListener = FirebaseHelper.firestore
             .collection(FirebaseHelper.COLLECTION_CATEGORIES)
-            .orderBy("order")
             .addSnapshotListener { snapshot, error ->
                 if (_binding == null) return@addSnapshotListener
 
@@ -109,26 +111,70 @@ class HomeFragment : Fragment() {
                 }
 
                 if (snapshot != null) {
-                    // Reset & re-add "All" + categories from Firestore
                     categories.clear()
                     categories.add(Category(id = "all", name = "All", order = 0))
 
+                    val categoryList = mutableListOf<Category>()
                     for (doc in snapshot.documents) {
                         try {
                             val category = doc.toObject(Category::class.java)
                                 ?.copy(id = doc.id)
                             if (category != null) {
-                                categories.add(category)
+                                categoryList.add(category)
                             }
                         } catch (e: Exception) {
                             Log.e(TAG, "Error parsing category: ${doc.id}", e)
                         }
                     }
 
-                    categoryAdapter.notifyDataSetChanged()
+                    // Sort di client-side
+                    val sorted = categoryList.sortedBy { it.order }
+                    categories.addAll(sorted)
+
+                    // Build chips
+                    buildCategoryChips()
+
                     Log.d(TAG, "Loaded ${categories.size - 1} categories from Firestore")
                 }
             }
+    }
+
+    /**
+     * Build chips dari list categories.
+     */
+    private fun buildCategoryChips() {
+        val chipGroup = binding.chipGroupCategories
+        chipGroup.removeAllViews()
+
+        for ((index, category) in categories.withIndex()) {
+            val chip = Chip(requireContext()).apply {
+                text = category.name
+                isCheckable = true
+                isClickable = true
+
+                // Default: chip pertama (All) dipilih
+                isChecked = category.id == selectedCategoryId
+
+                // Styling
+                chipBackgroundColor = androidx.core.content.ContextCompat.getColorStateList(
+                    requireContext(), R.color.chip_background_color)
+                setTextColor(androidx.core.content.ContextCompat.getColorStateList(
+                    requireContext(), R.color.chip_text_color))
+                chipStrokeColor = androidx.core.content.ContextCompat.getColorStateList(
+                    requireContext(), R.color.chip_stroke_color)
+                chipStrokeWidth = 1f
+                textSize = 12f
+
+                // Click listener
+                setOnClickListener {
+                    if (isChecked) {
+                        selectedCategoryId = category.id
+                        filterFoodsByCategory(category)
+                    }
+                }
+            }
+            chipGroup.addView(chip)
+        }
     }
 
     /**

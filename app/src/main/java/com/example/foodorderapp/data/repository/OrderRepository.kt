@@ -230,4 +230,125 @@ object OrderRepository {
     fun canBeCancelled(status: String): Boolean {
         return status == OrderStatus.PENDING || status == OrderStatus.ACCEPTED
     }
+
+    /**
+     * Listen real-time orders untuk seller (untuk Order Management).
+     * Filter di client-side berdasarkan status group.
+     */
+    fun listenToSellerOrders(
+        onUpdate: (List<Order>) -> Unit,
+        onError: (String) -> Unit
+    ): ListenerRegistration? {
+        val sellerId = FirebaseHelper.getCurrentUserId()
+        if (sellerId == null) {
+            onError("User not logged in")
+            return null
+        }
+
+        return FirebaseHelper.firestore
+            .collection(FirebaseHelper.COLLECTION_ORDERS)
+            .whereEqualTo("sellerId", sellerId)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    onError(error.message ?: "Unknown error")
+                    return@addSnapshotListener
+                }
+
+                if (snapshot != null) {
+                    val orders = snapshot.documents.mapNotNull { doc ->
+                        try {
+                            doc.toObject(Order::class.java)
+                        } catch (e: Exception) {
+                            null
+                        }
+                    }
+                    // Sort manual
+                    val sorted = orders.sortedByDescending { it.createdAt }
+                    onUpdate(sorted)
+                }
+            }
+    }
+
+    /**
+     * Update status order ke status berikutnya.
+     */
+    fun updateOrderStatus(
+        orderId: String,
+        newStatus: String,
+        onSuccess: () -> Unit,
+        onFailure: (String) -> Unit
+    ) {
+        val updates = mutableMapOf<String, Any>(
+            "status" to newStatus,
+            "updatedAt" to System.currentTimeMillis()
+        )
+
+        // Set completedAt kalau status delivered
+        if (newStatus == OrderStatus.DELIVERED) {
+            updates["completedAt"] = System.currentTimeMillis()
+        }
+
+        FirebaseHelper.firestore
+            .collection(FirebaseHelper.COLLECTION_ORDERS)
+            .document(orderId)
+            .update(updates)
+            .addOnSuccessListener { onSuccess() }
+            .addOnFailureListener { e ->
+                onFailure(e.message ?: "Failed to update order")
+            }
+    }
+
+    /**
+     * Filter orders berdasarkan tab.
+     * - Pending: status = pending
+     * - Active: status = accepted, preparing, ready
+     * - Completed: status = delivered, cancelled
+     */
+    fun filterOrdersByTab(orders: List<Order>, tab: OrderTab): List<Order> {
+        return when (tab) {
+            OrderTab.PENDING -> orders.filter { it.status == OrderStatus.PENDING }
+            OrderTab.ACTIVE -> orders.filter {
+                it.status == OrderStatus.ACCEPTED ||
+                        it.status == OrderStatus.PREPARING ||
+                        it.status == OrderStatus.READY
+            }
+            OrderTab.COMPLETED -> orders.filter {
+                it.status == OrderStatus.DELIVERED ||
+                        it.status == OrderStatus.CANCELLED
+            }
+        }
+    }
+
+    /**
+     * Helper: get next status berdasarkan current status (untuk seller actions).
+     */
+    fun getNextStatus(currentStatus: String): String? {
+        return when (currentStatus) {
+            OrderStatus.PENDING -> OrderStatus.ACCEPTED
+            OrderStatus.ACCEPTED -> OrderStatus.PREPARING
+            OrderStatus.PREPARING -> OrderStatus.READY
+            OrderStatus.READY -> OrderStatus.DELIVERED
+            else -> null  // status final, tidak bisa lanjut
+        }
+    }
+
+    /**
+     * Get label untuk action button berdasarkan current status.
+     */
+    fun getActionButtonLabel(currentStatus: String): String? {
+        return when (currentStatus) {
+            OrderStatus.PENDING -> "Accept"  // (akan ada accept + reject buttons)
+            OrderStatus.ACCEPTED -> "Start Preparing"
+            OrderStatus.PREPARING -> "Mark as Ready"
+            OrderStatus.READY -> "Mark as Delivered"
+            else -> null
+        }
+    }
+
+    /**
+     * Enum untuk tab order management.
+     */
+    enum class OrderTab {
+        PENDING, ACTIVE, COMPLETED
+    }
 }

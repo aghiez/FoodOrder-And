@@ -92,14 +92,25 @@
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvCategories"
+<!--            <androidx.recyclerview.widget.RecyclerView-->
+<!--                android:id="@+id/rvCategories"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="12dp"-->
+<!--                android:clipToPadding="false"-->
+<!--                android:paddingHorizontal="20dp"-->
+<!--                tools:listitem="@layout/item_category" />-->
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupCategories"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:clipToPadding="false"
                 android:paddingHorizontal="20dp"
-                tools:listitem="@layout/item_category" />
+                app:singleSelection="true"
+                app:selectionRequired="true"
+                app:chipSpacingHorizontal="6dp"
+                app:chipSpacingVertical="6dp" />
 
             <TextView
                 android:layout_width="wrap_content"

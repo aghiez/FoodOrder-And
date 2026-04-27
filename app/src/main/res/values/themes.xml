@@ -36,4 +36,11 @@
         <item name="android:textStyle">bold</item>
         <item name="android:minHeight">52dp</item>
     </style>
+
+    <style name="TabTextStyle" parent="TextAppearance.Design.Tab">
+        <item name="textAllCaps">false</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
 </resources>

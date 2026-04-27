@@ -263,4 +263,42 @@
     <string name="error_stock_required">Stock is required</string>
     <string name="error_stock_invalid">Stock must be a valid number</string>
 
+    <!-- Seller Order Management -->
+    <string name="seller_orders_title">Order Management</string>
+    <string name="seller_orders_tab_pending">Pending</string>
+    <string name="seller_orders_tab_active">Active</string>
+    <string name="seller_orders_tab_completed">Completed</string>
+    <string name="seller_orders_empty_pending">No pending orders</string>
+    <string name="seller_orders_empty_pending_subtitle">New orders will appear here</string>
+    <string name="seller_orders_empty_active">No active orders</string>
+    <string name="seller_orders_empty_active_subtitle">Orders being prepared will appear here</string>
+    <string name="seller_orders_empty_completed">No completed orders</string>
+    <string name="seller_orders_empty_completed_subtitle">Completed/cancelled orders will appear here</string>
+
+    <!-- Order Action Buttons -->
+    <string name="seller_action_accept">Accept</string>
+    <string name="seller_action_reject">Reject</string>
+    <string name="seller_action_start_preparing">Start Preparing</string>
+    <string name="seller_action_mark_ready">Mark as Ready</string>
+    <string name="seller_action_mark_delivered">Mark as Delivered</string>
+
+    <!-- Confirmations -->
+    <string name="seller_confirm_accept_title">Accept Order?</string>
+    <string name="seller_confirm_accept_message">Confirm to accept this order. You\'ll need to prepare and deliver it.</string>
+    <string name="seller_confirm_reject_title">Reject Order?</string>
+    <string name="seller_confirm_reject_message">This order will be cancelled. The buyer will be notified.</string>
+
+    <!-- Toast Messages -->
+    <string name="seller_order_accepted">Order accepted</string>
+    <string name="seller_order_rejected">Order rejected</string>
+    <string name="seller_order_preparing">Status updated to Preparing</string>
+    <string name="seller_order_ready">Status updated to Ready</string>
+    <string name="seller_order_delivered">Order marked as Delivered</string>
+    <string name="seller_order_update_failed">Failed to update order</string>
+
+    <!-- Order Card Info -->
+    <string name="seller_order_buyer">Buyer</string>
+    <string name="seller_order_address">Address</string>
+    <string name="seller_order_payment">Payment</string>
+
 </resources>
