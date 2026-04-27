@@ -1,0 +1,201 @@
+package com.example.foodorderapp.data.repository
+
+import com.example.foodorderapp.data.model.Food
+import com.example.foodorderapp.data.model.Order
+import com.example.foodorderapp.data.model.OrderStatus
+import com.example.foodorderapp.data.model.Seller
+import com.example.foodorderapp.data.remote.FirebaseHelper
+import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.firestore.Query
+import java.util.Calendar
+
+object SellerRepository {
+
+    /**
+     * Get seller info by current user.
+     */
+    fun getCurrentSeller(
+        onSuccess: (Seller) -> Unit,
+        onFailure: (String) -> Unit
+    ) {
+        val userId = FirebaseHelper.getCurrentUserId()
+        if (userId == null) {
+            onFailure("User not logged in")
+            return
+        }
+
+        FirebaseHelper.firestore
+            .collection(FirebaseHelper.COLLECTION_SELLERS)
+            .document(userId)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val seller = document.toObject(Seller::class.java)
+                    if (seller != null) {
+                        onSuccess(seller)
+                    } else {
+                        onFailure("Seller data is corrupted")
+                    }
+                } else {
+                    onFailure("Seller not found")
+                }
+            }
+            .addOnFailureListener { e ->
+                onFailure(e.message ?: "Unknown error")
+            }
+    }
+
+    /**
+     * Get statistik seller untuk dashboard.
+     * Multiple async queries digabung jadi 1 callback.
+     */
+    fun getDashboardStats(
+        onSuccess: (revenueToday: Double, pendingOrders: Int,
+                    activeMenus: Int, totalOrders: Int) -> Unit,
+        onFailure: (String) -> Unit
+    ) {
+        val sellerId = FirebaseHelper.getCurrentUserId()
+        if (sellerId == null) {
+            onFailure("User not logged in")
+            return
+        }
+
+        // Variables untuk hasil tiap query
+        var revenueToday = 0.0
+        var pendingOrders = 0
+        var activeMenus = 0
+        var totalOrders = 0
+
+        // Counter untuk track berapa query yang selesai
+        var completedQueries = 0
+        val totalQueries = 3
+
+        fun checkAllDone() {
+            completedQueries++
+            if (completedQueries == totalQueries) {
+                onSuccess(revenueToday, pendingOrders, activeMenus, totalOrders)
+            }
+        }
+
+        // Query 1: All orders milik seller ini (untuk revenue & total orders)
+        FirebaseHelper.firestore
+            .collection(FirebaseHelper.COLLECTION_ORDERS)
+            .whereEqualTo("sellerId", sellerId)
+            .get()
+            .addOnSuccessListener { documents ->
+                val startOfDay = getStartOfDayMillis()
+                val endOfDay = getEndOfDayMillis()
+
+                // Filter di client-side untuk menghindari composite index
+                val allOrders = documents.documents
+
+                // Total orders (semua kecuali cancelled)
+                totalOrders = allOrders.count {
+                    it.getString("status") != OrderStatus.CANCELLED
+                }
+
+                // Revenue hari ini (yang sudah delivered, dalam range hari ini)
+                revenueToday = allOrders
+                    .filter { doc ->
+                        val status = doc.getString("status")
+                        val createdAt = doc.getLong("createdAt") ?: 0L
+                        status == OrderStatus.DELIVERED &&
+                                createdAt in startOfDay..endOfDay
+                    }
+                    .sumOf { it.getDouble("totalAmount") ?: 0.0 }
+
+                // Pending orders
+                pendingOrders = allOrders.count {
+                    it.getString("status") == OrderStatus.PENDING
+                }
+
+                checkAllDone()
+            }
+            .addOnFailureListener {
+                // Tetap call checkAllDone agar UI tidak stuck
+                checkAllDone()
+            }
+
+        // Query 2: Active menus
+        FirebaseHelper.firestore
+            .collection(FirebaseHelper.COLLECTION_FOODS)
+            .whereEqualTo("sellerId", sellerId)
+            .whereEqualTo("isAvailable", true)
+            .get()
+            .addOnSuccessListener { documents ->
+                activeMenus = documents.size()
+                checkAllDone()
+            }
+            .addOnFailureListener {
+                checkAllDone()
+            }
+
+        // Query 3 (placeholder, kita pakai dummy)
+        // Sebenarnya cukup 2 query, tapi untuk clarity kita anggap 3 phase
+        checkAllDone()
+    }
+
+    /**
+     * Listen real-time pending orders untuk seller.
+     */
+    fun listenToPendingOrders(
+        onUpdate: (List<Order>) -> Unit,
+        onError: (String) -> Unit
+    ): ListenerRegistration? {
+        val sellerId = FirebaseHelper.getCurrentUserId()
+        if (sellerId == null) {
+            onError("User not logged in")
+            return null
+        }
+
+        return FirebaseHelper.firestore
+            .collection(FirebaseHelper.COLLECTION_ORDERS)
+            .whereEqualTo("sellerId", sellerId)
+            .whereEqualTo("status", OrderStatus.PENDING)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    onError(error.message ?: "Unknown error")
+                    return@addSnapshotListener
+                }
+
+                if (snapshot != null) {
+                    val orders = snapshot.documents.mapNotNull { doc ->
+                        try {
+                            doc.toObject(Order::class.java)
+                        } catch (e: Exception) {
+                            null
+                        }
+                    }
+                    // Sort manual karena tidak bisa orderBy tanpa composite index
+                    val sorted = orders.sortedByDescending { it.createdAt }
+                    onUpdate(sorted)
+                }
+            }
+    }
+
+    /**
+     * Helper: get start of today in milliseconds.
+     */
+    private fun getStartOfDayMillis(): Long {
+        val calendar = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        return calendar.timeInMillis
+    }
+
+    /**
+     * Helper: get end of today in milliseconds.
+     */
+    private fun getEndOfDayMillis(): Long {
+        val calendar = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 23)
+            set(Calendar.MINUTE, 59)
+            set(Calendar.SECOND, 59)
+            set(Calendar.MILLISECOND, 999)
+        }
+        return calendar.timeInMillis
+    }
+}

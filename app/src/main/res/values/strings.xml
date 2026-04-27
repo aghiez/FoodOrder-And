@@ -1,0 +1,221 @@
+<resources>
+    <!-- App -->
+    <string name="app_name">FoodOrderApp</string>
+
+    <!-- Splash -->
+    <string name="splash_tagline">Order food, anytime, anywhere</string>
+
+    <!-- Login -->
+    <string name="login_title">Welcome back</string>
+    <string name="login_subtitle">Login to continue ordering</string>
+    <string name="login_email_label">Email</string>
+    <string name="login_email_hint">your@email.com</string>
+    <string name="login_password_label">Password</string>
+    <string name="login_password_hint">Enter your password</string>
+    <string name="login_forgot_password">Forgot password?</string>
+    <string name="login_button">Login</string>
+    <string name="login_no_account">Don\'t have an account?</string>
+    <string name="login_register_link">Register</string>
+
+    <!-- Register -->
+    <string name="register_title">Create account</string>
+    <string name="register_subtitle">Join us and start ordering</string>
+    <string name="register_role_label">Register as</string>
+    <string name="register_role_buyer">Buyer</string>
+    <string name="register_role_seller">Seller</string>
+    <string name="register_name_label">Full name</string>
+    <string name="register_name_hint">Enter your full name</string>
+    <string name="register_email_label">Email</string>
+    <string name="register_email_hint">your@email.com</string>
+    <string name="register_phone_label">Phone number</string>
+    <string name="register_phone_hint">08xxxxxxxxxx</string>
+    <string name="register_password_label">Password</string>
+    <string name="register_password_hint">Min. 6 characters</string>
+    <string name="register_button">Register</string>
+    <string name="register_have_account">Already registered?</string>
+    <string name="register_login_link">Login</string>
+
+    <!-- Validation -->
+    <string name="error_email_empty">Email cannot be empty</string>
+    <string name="error_email_invalid">Please enter a valid email</string>
+    <string name="error_password_empty">Password cannot be empty</string>
+    <string name="error_password_short">Password must be at least 6 characters</string>
+    <string name="error_name_empty">Name cannot be empty</string>
+    <string name="error_phone_empty">Phone number cannot be empty</string>
+    <string name="error_role_not_selected">Please select a role</string>
+    <string name="error_password_mismatch">Passwords do not match</string>
+    <string name="error_password_same">New password must be different</string>
+    <string name="error_current_password_wrong">Current password is incorrect</string>
+
+    <!-- Toast Messages -->
+    <string name="msg_login_success">Login successful</string>
+    <string name="msg_register_success">Account created successfully</string>
+    <string name="msg_loading">Please wait…</string>
+
+    <!-- Home Fragment -->
+    <string name="home_greeting">Hello,</string>
+    <string name="home_search_hint">Search for food…</string>
+    <string name="home_categories_title">Categories</string>
+    <string name="home_all_foods_title">All Menu</string>
+    <string name="home_no_foods">No foods available yet</string>
+    <string name="home_loading">Loading…</string>
+    <string name="home_category_all">All</string>
+
+    <!-- Currency -->
+    <string name="currency_format">Rp %s</string>
+
+    <!-- Common Errors -->
+    <string name="error_loading_data">Failed to load data</string>
+
+    <!-- Food Detail -->
+    <string name="detail_quantity">Quantity</string>
+    <string name="detail_total_price">Total Price</string>
+    <string name="detail_add_to_cart">Add to Cart</string>
+    <string name="detail_description_title">Description</string>
+    <string name="detail_seller_title">From</string>
+    <string name="detail_stock">Stock: %1$d</string>
+    <string name="detail_unavailable">Currently unavailable</string>
+
+    <!-- Cart -->
+    <string name="cart_title">My Cart</string>
+    <string name="cart_empty">Your cart is empty</string>
+    <string name="cart_empty_subtitle">Add some delicious food!</string>
+    <string name="cart_total">Total</string>
+    <string name="cart_checkout">Checkout</string>
+    <string name="cart_added_to_cart">Added to cart</string>
+    <string name="cart_remove">Remove</string>
+    <string name="cart_clear">Clear All</string>
+    <string name="cart_subtotal">Subtotal</string>
+    <string name="cart_delivery_fee">Delivery Fee</string>
+    <string name="cart_clear_confirm_title">Clear Cart?</string>
+    <string name="cart_clear_confirm_message">All items in your cart will be removed.</string>
+    <string name="cart_remove_confirm_title">Remove Item?</string>
+    <string name="cart_remove_confirm_message">This item will be removed from your cart.</string>
+    <string name="cart_item_count">%d items</string>
+
+    <!-- Common Actions -->
+    <string name="action_yes">Yes</string>
+    <string name="action_no">No</string>
+    <string name="action_clear">Clear</string>
+    <string name="action_remove">Remove</string>
+    <string name="action_cancel">Cancel</string>
+
+    <!-- Cart-related Errors -->
+    <string name="error_must_login">You must be logged in</string>
+    <string name="error_add_to_cart_failed">Failed to add to cart</string>
+    <string name="error_different_seller">Cart can only contain items from one store</string>
+
+    <!-- Checkout -->
+    <string name="checkout_title">Checkout</string>
+    <string name="checkout_delivery_address">Delivery Address</string>
+    <string name="checkout_delivery_address_hint">Enter your full address</string>
+    <string name="checkout_notes">Notes (optional)</string>
+    <string name="checkout_notes_hint">e.g. Less spicy, no onion</string>
+    <string name="checkout_payment">Payment Method</string>
+    <string name="checkout_payment_cash">Cash on Delivery</string>
+    <string name="checkout_payment_transfer">Bank Transfer</string>
+    <string name="checkout_summary">Order Summary</string>
+    <string name="checkout_subtotal">Subtotal</string>
+    <string name="checkout_delivery_fee">Delivery Fee</string>
+    <string name="checkout_total">Total</string>
+    <string name="checkout_place_order">Place Order</string>
+    <string name="checkout_success">Order placed successfully!</string>
+
+    <!-- Orders -->
+    <string name="orders_title">My Orders</string>
+    <string name="orders_empty">No orders yet</string>
+    <string name="orders_empty_subtitle">Your order history will appear here</string>
+    <string name="orders_status_pending">Pending</string>
+    <string name="orders_status_accepted">Accepted</string>
+    <string name="orders_status_preparing">Preparing</string>
+    <string name="orders_status_ready">Ready for Pickup</string>
+    <string name="orders_status_delivered">Delivered</string>
+    <string name="orders_status_cancelled">Cancelled</string>
+    <string name="orders_view_detail">View Detail</string>
+    <string name="orders_cancel">Cancel Order</string>
+    <string name="orders_item_summary">%d items</string>
+    <string name="orders_id_format">Order #%s</string>
+    <string name="orders_date_format">%s • %s</string>
+
+    <!-- Order Detail -->
+    <string name="order_detail_title">Order Detail</string>
+    <string name="order_detail_status">Status</string>
+    <string name="order_detail_items">Items Ordered</string>
+    <string name="order_detail_payment_method">Payment Method</string>
+    <string name="order_detail_delivery_to">Delivery to</string>
+    <string name="order_detail_notes">Notes</string>
+    <string name="order_detail_no_notes">No notes</string>
+    <string name="order_detail_order_date">Order Date</string>
+    <string name="order_detail_cancel_confirm">Are you sure you want to cancel this order?</string>
+
+    <!-- Profile -->
+    <string name="profile_title">Profile</string>
+    <string name="profile_total_orders">Total Orders</string>
+    <string name="profile_total_spent">Total Spent</string>
+    <string name="profile_member_since">Member since</string>
+    <string name="profile_menu_edit">Edit Profile</string>
+    <string name="profile_menu_password">Change Password</string>
+    <string name="profile_menu_about">About App</string>
+    <string name="profile_menu_logout">Logout</string>
+    <string name="profile_logout_confirm_title">Logout?</string>
+    <string name="profile_logout_confirm_message">You will be signed out of your account.</string>
+    <string name="profile_about_title">About FoodOrderApp</string>
+    <string name="profile_about_message">FoodOrderApp v1.0.0\n\nA food ordering application for vocational learning purposes.\n\nDeveloped as part of LKS Jawa Tengah 2026 AI Category project.</string>
+
+    <!-- Edit Profile -->
+    <string name="edit_profile_title">Edit Profile</string>
+    <string name="edit_profile_name">Full Name</string>
+    <string name="edit_profile_phone">Phone Number</string>
+    <string name="edit_profile_email">Email</string>
+    <string name="edit_profile_email_locked">Email cannot be changed</string>
+    <string name="edit_profile_save">Save Changes</string>
+    <string name="edit_profile_success">Profile updated successfully</string>
+    <string name="edit_profile_no_changes">No changes to save</string>
+
+    <!-- Change Password -->
+    <string name="change_password_title">Change Password</string>
+    <string name="change_password_current">Current Password</string>
+    <string name="change_password_new">New Password</string>
+    <string name="change_password_confirm">Confirm New Password</string>
+    <string name="change_password_save">Update Password</string>
+    <string name="change_password_success">Password updated successfully</string>
+
+    <!-- Seller Navigation -->
+    <string name="seller_nav_home">Home</string>
+    <string name="seller_nav_menu">Menu</string>
+    <string name="seller_nav_orders">Orders</string>
+    <string name="seller_nav_profile">Profile</string>
+
+    <!-- Seller Home -->
+    <string name="seller_home_greeting">Welcome,</string>
+    <string name="seller_home_stat_revenue_today">Today\'s Revenue</string>
+    <string name="seller_home_stat_pending_orders">Pending Orders</string>
+    <string name="seller_home_stat_active_menus">Active Menus</string>
+    <string name="seller_home_stat_total_orders">Total Orders</string>
+    <string name="seller_home_pending_orders_title">Need Your Action</string>
+    <string name="seller_home_view_all">View All</string>
+    <string name="seller_home_no_pending">No pending orders</string>
+    <string name="seller_home_no_pending_subtitle">All orders have been processed</string>
+    <string name="seller_home_quick_actions">Quick Actions</string>
+    <string name="seller_home_action_add_menu">Add New Menu</string>
+    <string name="seller_home_action_view_orders">Manage Orders</string>
+
+    <!-- Menu Management -->
+    <string name="menu_mgmt_title">My Menu</string>
+    <string name="menu_mgmt_count">%d items</string>
+    <string name="menu_mgmt_empty">No menu items yet</string>
+    <string name="menu_mgmt_empty_subtitle">Tap + to add your first menu</string>
+    <string name="menu_mgmt_status_available">Available</string>
+    <string name="menu_mgmt_status_unavailable">Unavailable</string>
+    <string name="menu_mgmt_action_edit">Edit</string>
+    <string name="menu_mgmt_action_delete">Delete</string>
+    <string name="menu_mgmt_action_toggle_off">Set Unavailable</string>
+    <string name="menu_mgmt_action_toggle_on">Set Available</string>
+    <string name="menu_mgmt_delete_confirm_title">Delete Menu?</string>
+    <string name="menu_mgmt_delete_confirm_message">This menu will be permanently deleted.</string>
+    <string name="menu_mgmt_delete_success">Menu deleted</string>
+    <string name="menu_mgmt_status_updated">Status updated</string>
+    <string name="menu_mgmt_action_select">Select Action</string>
+    <string name="menu_mgmt_stock_format">Stock: %d</string>
+
+</resources>

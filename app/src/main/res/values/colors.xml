@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary Color Palette - Purple -->
+    <color name="primary">#6C5CE7</color>
+    <color name="primary_dark">#5849C7</color>
+    <color name="primary_light">#A29BFE</color>
+    <color name="primary_bg">#F0EFFE</color>
+
+    <!-- Neutrals -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="background">#FFFFFF</color>
+    <color name="surface">#F8F9FA</color>
+
+    <!-- Text Colors -->
+    <color name="text_primary">#212529</color>
+    <color name="text_secondary">#6C757D</color>
+    <color name="text_hint">#ADB5BD</color>
+
+    <!-- Borders -->
+    <color name="border">#DEE2E6</color>
+    <color name="border_focus">#6C5CE7</color>
+
+    <!-- Status Colors -->
+    <color name="success">#28A745</color>
+    <color name="error">#DC3545</color>
+    <color name="warning">#FFC107</color>
+    <color name="info">#17A2B8</color>
+
+    <!-- Status Bar -->
+    <color name="status_bar">#5849C7</color>
+</resources>
