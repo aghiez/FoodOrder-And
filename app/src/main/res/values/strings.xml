@@ -218,4 +218,16 @@
     <string name="menu_mgmt_action_select">Select Action</string>
     <string name="menu_mgmt_stock_format">Stock: %d</string>
 
+    <!-- Image Picker -->
+    <string name="img_pick_title">Add Image</string>
+    <string name="img_pick_subtitle">Tap to choose from gallery</string>
+    <string name="img_pick_choose">Choose Image</string>
+    <string name="img_pick_change">Change Image</string>
+    <string name="img_pick_remove">Remove Image</string>
+    <string name="permission_required_title">Permission Required</string>
+    <string name="permission_required_message">App needs permission to access your photos to upload menu images.</string>
+    <string name="permission_grant">Grant Permission</string>
+    <string name="permission_settings">Open Settings</string>
+    <string name="error_image_load">Failed to load image</string>
+
 </resources>

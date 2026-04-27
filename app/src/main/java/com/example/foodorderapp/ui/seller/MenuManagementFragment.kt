@@ -57,11 +57,13 @@ class MenuManagementFragment : Fragment() {
     private fun setupListeners() {
         binding.fabAddMenu.setOnClickListener {
             // TODO: Akan dibuat di C.4
-            Toast.makeText(requireContext(),
-                "Add Menu feature coming in next step (C.4)!",
-                Toast.LENGTH_SHORT).show()
+            //Toast.makeText(requireContext(),
+            //    "Add Menu feature coming in next step (C.4)!",
+            //    Toast.LENGTH_SHORT).show()
             // Sementara kita uncomment di C.4 saat AddEditMenuActivity sudah dibuat
             // startActivity(Intent(requireContext(), AddEditMenuActivity::class.java))
+            startActivity(Intent(requireContext(), ImagePickerDemoActivity::class.java))
+
         }
     }
 
