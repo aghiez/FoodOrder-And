@@ -230,4 +230,37 @@
     <string name="permission_settings">Open Settings</string>
     <string name="error_image_load">Failed to load image</string>
 
+    <!-- Add/Edit Menu -->
+    <string name="add_menu_title">Add New Menu</string>
+    <string name="edit_menu_title">Edit Menu</string>
+    <string name="menu_form_image">Menu Image</string>
+    <string name="menu_form_image_subtitle">Tap to choose photo</string>
+    <string name="menu_form_name">Menu Name</string>
+    <string name="menu_form_name_hint">e.g. Nasi Goreng Spesial</string>
+    <string name="menu_form_description">Description</string>
+    <string name="menu_form_description_hint">Brief description of the menu</string>
+    <string name="menu_form_category">Category</string>
+    <string name="menu_form_price">Price (Rp)</string>
+    <string name="menu_form_price_hint">15000</string>
+    <string name="menu_form_stock">Stock</string>
+    <string name="menu_form_stock_hint">50</string>
+    <string name="menu_form_save">Save Menu</string>
+    <string name="menu_form_update">Update Menu</string>
+    <string name="menu_form_uploading">Uploading image…</string>
+    <string name="menu_form_saving">Saving…</string>
+    <string name="menu_form_save_success">Menu saved successfully</string>
+    <string name="menu_form_update_success">Menu updated successfully</string>
+
+    <!-- Validation Errors -->
+    <string name="error_image_required">Please select an image</string>
+    <string name="error_menu_name_required">Menu name is required</string>
+    <string name="error_menu_name_short">Menu name too short (min 3 chars)</string>
+    <string name="error_description_required">Description is required</string>
+    <string name="error_category_required">Please select a category</string>
+    <string name="error_price_required">Price is required</string>
+    <string name="error_price_invalid">Price must be a valid number</string>
+    <string name="error_price_min">Price must be at least Rp 1.000</string>
+    <string name="error_stock_required">Stock is required</string>
+    <string name="error_stock_invalid">Stock must be a valid number</string>
+
 </resources>

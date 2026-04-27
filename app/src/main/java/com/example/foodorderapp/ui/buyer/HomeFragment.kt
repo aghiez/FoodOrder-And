@@ -1,12 +1,12 @@
 package com.example.foodorderapp.ui.buyer
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import android.content.Intent
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.foodorderapp.data.model.Category
@@ -15,6 +15,7 @@ import com.example.foodorderapp.data.remote.FirebaseHelper
 import com.example.foodorderapp.databinding.FragmentHomeBinding
 import com.example.foodorderapp.ui.buyer.adapter.CategoryAdapter
 import com.example.foodorderapp.ui.buyer.adapter.FoodAdapter
+import com.google.firebase.firestore.ListenerRegistration
 
 class HomeFragment : Fragment() {
 
@@ -27,8 +28,13 @@ class HomeFragment : Fragment() {
     private lateinit var foodAdapter: FoodAdapter
 
     private val categories = mutableListOf<Category>()
-    private var allFoods = listOf<Food>()  // semua makanan dari Firestore
-    private var filteredFoods = listOf<Food>()  // makanan setelah filter kategori
+    private var allFoods = listOf<Food>()
+    private var filteredFoods = listOf<Food>()
+    private var selectedCategoryId: String = "all"
+
+    // Real-time listeners
+    private var foodsListener: ListenerRegistration? = null
+    private var categoriesListener: ListenerRegistration? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,8 +50,8 @@ class HomeFragment : Fragment() {
 
         loadUserName()
         setupRecyclerViews()
-        loadCategories()
-        loadFoods()
+        startListeningToCategories()
+        startListeningToFoods()
     }
 
     private fun loadUserName() {
@@ -63,8 +69,9 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupRecyclerViews() {
-        // Category RecyclerView - horizontal
+        // Category RecyclerView
         categoryAdapter = CategoryAdapter(categories) { category ->
+            selectedCategoryId = category.id
             filterFoodsByCategory(category)
         }
         binding.rvCategories.apply {
@@ -73,91 +80,113 @@ class HomeFragment : Fragment() {
             adapter = categoryAdapter
         }
 
-        // Food RecyclerView - vertical
+        // Food RecyclerView
         foodAdapter = FoodAdapter(emptyList()) { food ->
             val intent = Intent(requireContext(), FoodDetailActivity::class.java)
             intent.putExtra(FoodDetailActivity.EXTRA_FOOD, food)
             startActivity(intent)
         }
-
         binding.rvFoods.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = foodAdapter
-            isNestedScrollingEnabled = false  // disable scroll dalam NestedScrollView
+            isNestedScrollingEnabled = false
         }
     }
 
-    private fun loadCategories() {
-        // Tambah "All" sebagai kategori pertama
-        categories.clear()
-        categories.add(Category(id = "all", name = "All", order = 0))
-
-        FirebaseHelper.firestore
+    /**
+     * Listen real-time changes ke categories.
+     */
+    private fun startListeningToCategories() {
+        categoriesListener = FirebaseHelper.firestore
             .collection(FirebaseHelper.COLLECTION_CATEGORIES)
             .orderBy("order")
-            .get()
-            .addOnSuccessListener { documents ->
-                if (_binding == null) return@addOnSuccessListener
+            .addSnapshotListener { snapshot, error ->
+                if (_binding == null) return@addSnapshotListener
 
-                for (doc in documents) {
-                    val category = doc.toObject(Category::class.java)
-                        .copy(id = doc.id)
-                    categories.add(category)
+                if (error != null) {
+                    Log.e(TAG, "Error loading categories", error)
+                    return@addSnapshotListener
                 }
-                categoryAdapter.notifyDataSetChanged()
-                Log.d(TAG, "Loaded ${categories.size - 1} categories")
-            }
-            .addOnFailureListener { e ->
-                Log.e(TAG, "Error loading categories", e)
-                if (_binding != null) {
-                    Toast.makeText(requireContext(),
-                        "Failed to load categories", Toast.LENGTH_SHORT).show()
+
+                if (snapshot != null) {
+                    // Reset & re-add "All" + categories from Firestore
+                    categories.clear()
+                    categories.add(Category(id = "all", name = "All", order = 0))
+
+                    for (doc in snapshot.documents) {
+                        try {
+                            val category = doc.toObject(Category::class.java)
+                                ?.copy(id = doc.id)
+                            if (category != null) {
+                                categories.add(category)
+                            }
+                        } catch (e: Exception) {
+                            Log.e(TAG, "Error parsing category: ${doc.id}", e)
+                        }
+                    }
+
+                    categoryAdapter.notifyDataSetChanged()
+                    Log.d(TAG, "Loaded ${categories.size - 1} categories from Firestore")
                 }
             }
     }
 
-    private fun loadFoods() {
+    /**
+     * Listen real-time changes ke foods.
+     */
+    private fun startListeningToFoods() {
         showLoading(true)
 
-        FirebaseHelper.firestore
+        foodsListener = FirebaseHelper.firestore
             .collection(FirebaseHelper.COLLECTION_FOODS)
             .whereEqualTo("isAvailable", true)
-            .get()
-            .addOnSuccessListener { documents ->
-                if (_binding == null) return@addOnSuccessListener
+            .addSnapshotListener { snapshot, error ->
+                if (_binding == null) return@addSnapshotListener
 
                 showLoading(false)
 
-                val foodList = mutableListOf<Food>()
-                for (doc in documents) {
-                    try {
-                        val food = doc.toObject(Food::class.java)
-                            .copy(id = doc.id)
-                        foodList.add(food)
-                    } catch (e: Exception) {
-                        Log.e(TAG, "Error parsing food: ${doc.id}", e)
-                    }
+                if (error != null) {
+                    Log.e(TAG, "Error loading foods", error)
+                    Toast.makeText(requireContext(),
+                        "Failed to load foods: ${error.message}",
+                        Toast.LENGTH_SHORT).show()
+                    return@addSnapshotListener
                 }
 
-                allFoods = foodList
-                filteredFoods = foodList
-                foodAdapter.updateFoods(filteredFoods)
+                if (snapshot != null) {
+                    val foodList = mutableListOf<Food>()
+                    for (doc in snapshot.documents) {
+                        try {
+                            val food = doc.toObject(Food::class.java)
+                                ?.copy(id = doc.id)
+                            if (food != null) {
+                                foodList.add(food)
+                            }
+                        } catch (e: Exception) {
+                            Log.e(TAG, "Error parsing food: ${doc.id}", e)
+                        }
+                    }
 
-                showEmptyState(foodList.isEmpty())
-                Log.d(TAG, "Loaded ${foodList.size} foods")
-            }
-            .addOnFailureListener { e ->
-                if (_binding == null) return@addOnFailureListener
+                    allFoods = foodList
 
-                showLoading(false)
-                showEmptyState(true)
-                Log.e(TAG, "Error loading foods", e)
-                Toast.makeText(requireContext(),
-                    "Failed to load foods: ${e.message}", Toast.LENGTH_SHORT).show()
+                    // Re-apply current filter
+                    val currentCategory = categories.find { it.id == selectedCategoryId }
+                    if (currentCategory != null) {
+                        filterFoodsByCategory(currentCategory)
+                    } else {
+                        filteredFoods = foodList
+                        foodAdapter.updateFoods(filteredFoods)
+                        showEmptyState(foodList.isEmpty())
+                    }
+
+                    Log.d(TAG, "Loaded ${foodList.size} foods from Firestore")
+                }
             }
     }
 
     private fun filterFoodsByCategory(category: Category) {
+        selectedCategoryId = category.id
+
         filteredFoods = if (category.id == "all") {
             allFoods
         } else {
@@ -179,6 +208,11 @@ class HomeFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        // PENTING: Remove listeners untuk cegah memory leak
+        foodsListener?.remove()
+        foodsListener = null
+        categoriesListener?.remove()
+        categoriesListener = null
         _binding = null
     }
 }

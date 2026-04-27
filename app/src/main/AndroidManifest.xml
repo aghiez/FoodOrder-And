@@ -70,6 +70,10 @@
             android:name=".ui.seller.ImagePickerDemoActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".ui.seller.AddEditMenuActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>

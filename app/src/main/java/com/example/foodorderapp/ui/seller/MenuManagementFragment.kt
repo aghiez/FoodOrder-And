@@ -62,7 +62,7 @@ class MenuManagementFragment : Fragment() {
             //    Toast.LENGTH_SHORT).show()
             // Sementara kita uncomment di C.4 saat AddEditMenuActivity sudah dibuat
             // startActivity(Intent(requireContext(), AddEditMenuActivity::class.java))
-            startActivity(Intent(requireContext(), ImagePickerDemoActivity::class.java))
+            startActivity(Intent(requireContext(), AddEditMenuActivity::class.java))
 
         }
     }
@@ -148,13 +148,13 @@ class MenuManagementFragment : Fragment() {
 
     private fun editMenu(food: Food) {
         // TODO: Akan dibuat di C.4
-        Toast.makeText(requireContext(),
-            "Edit feature coming in C.4: ${food.name}",
-            Toast.LENGTH_SHORT).show()
+        //Toast.makeText(requireContext(),
+        //    "Edit feature coming in C.4: ${food.name}",
+        //    Toast.LENGTH_SHORT).show()
         // Sementara kita uncomment di C.4
-        // val intent = Intent(requireContext(), AddEditMenuActivity::class.java)
-        // intent.putExtra(AddEditMenuActivity.EXTRA_FOOD_ID, food.id)
-        // startActivity(intent)
+         val intent = Intent(requireContext(), AddEditMenuActivity::class.java)
+         intent.putExtra(AddEditMenuActivity.EXTRA_FOOD_ID, food.id)
+         startActivity(intent)
     }
 
     private fun showDeleteConfirmation(food: Food) {
