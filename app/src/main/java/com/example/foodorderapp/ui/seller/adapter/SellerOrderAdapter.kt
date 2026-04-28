@@ -105,6 +105,9 @@ class SellerOrderAdapter(
                     binding.btnPrimaryAction.setBackgroundResource(R.drawable.bg_button_success)
                     binding.btnPrimaryAction.setOnClickListener { onPrimaryAction(order) }
                 }
+                OrderStatus.SHIPPED -> {
+                    binding.llActionButtons.visibility = View.GONE
+                }
                 else -> {
                     // DELIVERED atau CANCELLED → tidak ada action
                     binding.llActionButtons.visibility = View.GONE

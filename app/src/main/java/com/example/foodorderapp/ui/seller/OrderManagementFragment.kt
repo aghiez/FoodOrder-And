@@ -149,8 +149,8 @@ class OrderManagementFragment : Fragment() {
                 getString(R.string.seller_order_preparing))
             OrderStatus.PREPARING -> updateStatus(order, OrderStatus.READY,
                 getString(R.string.seller_order_ready))
-            OrderStatus.READY -> updateStatus(order, OrderStatus.DELIVERED,
-                getString(R.string.seller_order_delivered))
+            OrderStatus.READY -> updateStatus(order, OrderStatus.SHIPPED,
+                getString(R.string.seller_order_shipped))
         }
     }
 

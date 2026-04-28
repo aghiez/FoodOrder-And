@@ -5,6 +5,7 @@ object OrderStatus {
     const val ACCEPTED = "accepted"
     const val PREPARING = "preparing"
     const val READY = "ready"
+    const val SHIPPED = "shipped"
     const val DELIVERED = "delivered"
     const val CANCELLED = "cancelled"
 }

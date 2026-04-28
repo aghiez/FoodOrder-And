@@ -310,5 +310,46 @@
     <string name="seller_detail_completed_info">This order has been completed</string>
     <string name="seller_detail_cancelled_info">This order has been cancelled</string>
 
+    <!-- Shipped & Confirm Received -->
+    <string name="seller_action_mark_shipped">Mark as Shipped</string>
+    <string name="seller_order_shipped">Status updated to On Delivery</string>
+    <string name="orders_status_shipped">On Delivery</string>
+
+    <!-- Buyer Confirm Received -->
+    <string name="buyer_action_confirm_received">Confirm Received</string>
+    <string name="buyer_confirm_received_title">Confirm Order Received?</string>
+    <string name="buyer_confirm_received_message">Please confirm that you have received this order. This action cannot be undone.</string>
+    <string name="buyer_action_yes_received">Yes, Received</string>
+    <string name="buyer_order_confirmed">Order confirmed received. Thank you!</string>
+    <string name="buyer_order_confirm_failed">Failed to confirm order</string>
+
+    <!-- Store Profile -->
+    <string name="store_profile_title">Store Profile</string>
+    <string name="store_status_open">Open</string>
+    <string name="store_status_closed">Closed</string>
+    <string name="store_status_open_desc">Customers can place orders</string>
+    <string name="store_status_closed_desc">No new orders accepted</string>
+    <string name="store_info_title">Store Information</string>
+    <string name="store_stats_title">Store Statistics</string>
+    <string name="store_stats_revenue">Total Revenue</string>
+    <string name="store_stats_orders">Total Orders</string>
+    <string name="store_stats_rating">Rating</string>
+    <string name="store_account_title">Account</string>
+    <string name="store_action_edit">Edit Store Profile</string>
+    <string name="store_action_change_password">Change Password</string>
+    <string name="store_action_logout">Logout</string>
+
+    <!-- Logout Confirmation -->
+    <string name="store_logout_title">Logout?</string>
+    <string name="store_logout_message">Are you sure you want to logout?</string>
+
+    <!-- Toggle Open/Close -->
+    <string name="store_toggle_open_success">Store is now open</string>
+    <string name="store_toggle_close_success">Store is now closed</string>
+    <string name="store_toggle_failed">Failed to update store status</string>
+
+    <!-- Empty/Loading -->
+    <string name="store_loading">Loading store info...</string>
+    <string name="store_load_failed">Failed to load store info</string>
 
 </resources>

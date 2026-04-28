@@ -1,6 +1,7 @@
 package com.example.foodorderapp.data.model
 
 data class Seller(
+    val id: String = "",
     val userId: String = "",
     val storeName: String = "",
     val storeDescription: String = "",
@@ -10,6 +11,7 @@ data class Seller(
     val isVerified: Boolean = false,
     val isOpen: Boolean = true,
     val rating: Double = 0.0,
+    val totalRevenue: Double = 0.0,
     val totalReviews: Int = 0,
     val totalOrders: Int = 0,
     val createdAt: Long = 0L

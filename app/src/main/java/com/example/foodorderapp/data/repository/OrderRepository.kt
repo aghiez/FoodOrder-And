@@ -188,6 +188,7 @@ object OrderRepository {
             OrderStatus.ACCEPTED -> "Accepted"
             OrderStatus.PREPARING -> "Preparing"
             OrderStatus.READY -> "Ready"
+            OrderStatus.SHIPPED -> "On Delivery"
             OrderStatus.DELIVERED -> "Delivered"
             OrderStatus.CANCELLED -> "Cancelled"
             else -> status.replaceFirstChar { it.uppercase() }
@@ -203,6 +204,7 @@ object OrderRepository {
             OrderStatus.ACCEPTED -> com.example.foodorderapp.R.drawable.bg_status_accepted
             OrderStatus.PREPARING -> com.example.foodorderapp.R.drawable.bg_status_preparing
             OrderStatus.READY -> com.example.foodorderapp.R.drawable.bg_status_accepted
+            OrderStatus.SHIPPED -> com.example.foodorderapp.R.drawable.bg_status_shipped
             OrderStatus.DELIVERED -> com.example.foodorderapp.R.drawable.bg_status_delivered
             OrderStatus.CANCELLED -> com.example.foodorderapp.R.drawable.bg_status_cancelled
             else -> com.example.foodorderapp.R.drawable.bg_status_pending
@@ -218,6 +220,7 @@ object OrderRepository {
             OrderStatus.ACCEPTED -> android.graphics.Color.parseColor("#0C5460")
             OrderStatus.PREPARING -> android.graphics.Color.parseColor("#7E4710")
             OrderStatus.READY -> android.graphics.Color.parseColor("#0C5460")
+            OrderStatus.SHIPPED -> android.graphics.Color.parseColor("#1565C0")
             OrderStatus.DELIVERED -> android.graphics.Color.parseColor("#155724")
             OrderStatus.CANCELLED -> android.graphics.Color.parseColor("#721C24")
             else -> android.graphics.Color.parseColor("#856404")
@@ -310,7 +313,8 @@ object OrderRepository {
             OrderTab.ACTIVE -> orders.filter {
                 it.status == OrderStatus.ACCEPTED ||
                         it.status == OrderStatus.PREPARING ||
-                        it.status == OrderStatus.READY
+                        it.status == OrderStatus.READY ||
+                        it.status == OrderStatus.SHIPPED
             }
             OrderTab.COMPLETED -> orders.filter {
                 it.status == OrderStatus.DELIVERED ||
@@ -343,6 +347,31 @@ object OrderRepository {
             OrderStatus.READY -> "Mark as Delivered"
             else -> null
         }
+    }
+
+    /**
+     * Buyer confirm bahwa pesanan sudah diterima.
+     * Dipanggil setelah seller mark as shipped.
+     */
+    fun confirmReceived(
+        orderId: String,
+        onSuccess: () -> Unit,
+        onFailure: (String) -> Unit
+    ) {
+        val updates = mapOf(
+            "status" to OrderStatus.DELIVERED,
+            "updatedAt" to System.currentTimeMillis(),
+            "completedAt" to System.currentTimeMillis()
+        )
+
+        FirebaseHelper.firestore
+            .collection(FirebaseHelper.COLLECTION_ORDERS)
+            .document(orderId)
+            .update(updates)
+            .addOnSuccessListener { onSuccess() }
+            .addOnFailureListener { e ->
+                onFailure(e.message ?: "Failed to confirm")
+            }
     }
 
     /**

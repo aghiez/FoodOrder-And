@@ -198,4 +198,138 @@ object SellerRepository {
         }
         return calendar.timeInMillis
     }
+
+
+
+    /**
+     * Listen real-time data store profile untuk seller saat ini.
+     */
+    fun listenToStoreProfile(
+        onUpdate: (Map<String, Any>) -> Unit,
+        onError: (String) -> Unit
+    ): ListenerRegistration? {
+        val userId = FirebaseHelper.getCurrentUserId()
+        if (userId == null) {
+            onError("User not logged in")
+            return null
+        }
+
+        return FirebaseHelper.firestore
+            .collection(FirebaseHelper.COLLECTION_USERS)
+            .document(userId)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    onError(error.message ?: "Unknown error")
+                    return@addSnapshotListener
+                }
+
+                if (snapshot != null && snapshot.exists()) {
+                    val data = snapshot.data ?: emptyMap()
+                    onUpdate(data)
+                }
+            }
+    }
+
+    /**
+     * Toggle store status: open / close.
+     */
+    fun toggleStoreStatus(
+        isOpen: Boolean,
+        onSuccess: () -> Unit,
+        onFailure: (String) -> Unit
+    ) {
+        val userId = FirebaseHelper.getCurrentUserId()
+        if (userId == null) {
+            onFailure("User not logged in")
+            return
+        }
+
+        FirebaseHelper.firestore
+            .collection(FirebaseHelper.COLLECTION_USERS)
+            .document(userId)
+            .update(
+                mapOf(
+                    "isOpen" to isOpen,
+                    "updatedAt" to System.currentTimeMillis()
+                )
+            )
+            .addOnSuccessListener { onSuccess() }
+            .addOnFailureListener { e ->
+                onFailure(e.message ?: "Failed to update")
+            }
+    }
+
+    /**
+     * Update store profile (edit profile).
+     */
+    fun updateStoreProfile(
+        storeName: String,
+        storeDescription: String,
+        storeAddress: String,
+        phone: String,
+        onSuccess: () -> Unit,
+        onFailure: (String) -> Unit
+    ) {
+        val userId = FirebaseHelper.getCurrentUserId()
+        if (userId == null) {
+            onFailure("User not logged in")
+            return
+        }
+
+        val updates = mapOf(
+            "storeName" to storeName,
+            "storeDescription" to storeDescription,
+            "storeAddress" to storeAddress,
+            "phone" to phone,
+            "updatedAt" to System.currentTimeMillis()
+        )
+
+        FirebaseHelper.firestore
+            .collection(FirebaseHelper.COLLECTION_USERS)
+            .document(userId)
+            .update(updates)
+            .addOnSuccessListener { onSuccess() }
+            .addOnFailureListener { e ->
+                onFailure(e.message ?: "Failed to update profile")
+            }
+    }
+
+    /**
+     * Calculate total revenue & orders dari Firestore.
+     * Query semua orders milik seller dengan status DELIVERED, jumlahkan total.
+     */
+    fun calculateStoreStats(
+        onSuccess: (totalRevenue: Double, totalOrders: Int) -> Unit,
+        onFailure: (String) -> Unit
+    ) {
+        val sellerId = FirebaseHelper.getCurrentUserId()
+        if (sellerId == null) {
+            onFailure("User not logged in")
+            return
+        }
+
+        FirebaseHelper.firestore
+            .collection(FirebaseHelper.COLLECTION_ORDERS)
+            .whereEqualTo("sellerId", sellerId)
+            .whereEqualTo("status", "delivered")
+            .get()
+            .addOnSuccessListener { documents ->
+                var totalRevenue = 0.0
+                var totalOrders = 0
+
+                for (doc in documents) {
+                    val amount = doc.getDouble("totalAmount") ?: 0.0
+                    totalRevenue += amount
+                    totalOrders++
+                }
+
+                onSuccess(totalRevenue, totalOrders)
+            }
+            .addOnFailureListener { e ->
+                onFailure(e.message ?: "Failed to calculate stats")
+            }
+    }
+
+
+
 }

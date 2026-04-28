@@ -125,9 +125,28 @@ class OrderDetailActivity : AppCompatActivity() {
      * Buyer mode: tombol Cancel Order kalau status memungkinkan.
      */
     private fun configureBuyerMode(order: Order) {
-        binding.btnCancel.visibility = if (OrderRepository.canBeCancelled(order.status))
-            View.VISIBLE else View.GONE
-        binding.btnCancel.text = getString(R.string.orders_cancel)
+        when (order.status) {
+            // Status pending atau accepted: bisa cancel
+            OrderStatus.PENDING, OrderStatus.ACCEPTED -> {
+                binding.btnCancel.visibility = View.VISIBLE
+                binding.btnCancel.text = getString(R.string.orders_cancel)
+                binding.btnCancel.setBackgroundResource(R.drawable.bg_cancel_button)
+                binding.btnCancel.setTextColor(ContextCompat.getColor(this, R.color.error))
+            }
+
+            // Status SHIPPED: tombol Confirm Received
+            OrderStatus.SHIPPED -> {
+                binding.btnCancel.visibility = View.VISIBLE
+                binding.btnCancel.text = getString(R.string.buyer_action_confirm_received)
+                binding.btnCancel.setBackgroundResource(R.drawable.bg_button_success)
+                binding.btnCancel.setTextColor(ContextCompat.getColor(this, R.color.white))
+            }
+
+            // Status lain: tidak ada tombol
+            else -> {
+                binding.btnCancel.visibility = View.GONE
+            }
+        }
     }
 
     /**
@@ -279,13 +298,11 @@ class OrderDetailActivity : AppCompatActivity() {
     private fun showSellerActionButton(order: Order) {
         when (order.status) {
             OrderStatus.PENDING -> {
-                // Untuk Pending, kasih 2 tombol stack vertical
                 binding.btnCancel.visibility = View.VISIBLE
                 binding.btnCancel.text = getString(R.string.seller_action_accept)
                 binding.btnCancel.setBackgroundResource(R.drawable.bg_button_success)
                 binding.btnCancel.setTextColor(ContextCompat.getColor(this, R.color.white))
 
-                // Tombol reject akan ditambah dynamically
                 addRejectButton(order)
             }
             OrderStatus.ACCEPTED -> {
@@ -301,17 +318,47 @@ class OrderDetailActivity : AppCompatActivity() {
                 binding.btnCancel.setTextColor(ContextCompat.getColor(this, R.color.white))
             }
             OrderStatus.READY -> {
+                // Yang berubah
                 binding.btnCancel.visibility = View.VISIBLE
-                binding.btnCancel.text = getString(R.string.seller_action_mark_delivered)
+                binding.btnCancel.text = getString(R.string.seller_action_mark_shipped)
                 binding.btnCancel.setBackgroundResource(R.drawable.bg_button_success)
                 binding.btnCancel.setTextColor(ContextCompat.getColor(this, R.color.white))
             }
+            OrderStatus.SHIPPED -> {
+                // Tidak ada action, tampilkan info text
+                binding.btnCancel.visibility = View.GONE
+                addShippedInfo()
+            }
             OrderStatus.DELIVERED, OrderStatus.CANCELLED -> {
-                // Tidak ada action, tapi tampilkan info text
                 binding.btnCancel.visibility = View.GONE
                 addCompletedInfo(order)
             }
         }
+    }
+
+    /**
+     * Tambah info text untuk seller saat status SHIPPED.
+     */
+    private fun addShippedInfo() {
+        val container = binding.contentLayout
+
+        val tvInfo = TextView(this).apply {
+            text = "Order has been shipped. Waiting for buyer confirmation..."
+            textSize = 13f
+            setTextColor(ContextCompat.getColor(
+                this@OrderDetailActivity, R.color.text_secondary))
+            gravity = android.view.Gravity.CENTER
+
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                topMargin = (16 * resources.displayMetrics.density).toInt()
+                bottomMargin = (16 * resources.displayMetrics.density).toInt()
+            }
+        }
+
+        container.addView(tvInfo)
     }
 
     /**
@@ -382,12 +429,52 @@ class OrderDetailActivity : AppCompatActivity() {
         val order = currentOrder ?: return
 
         if (viewMode == MODE_BUYER) {
-            // Buyer: cancel order
-            showCancelConfirmation()
+            // Buyer mode: action tergantung status
+            when (order.status) {
+                OrderStatus.PENDING, OrderStatus.ACCEPTED -> showCancelConfirmation()
+                OrderStatus.SHIPPED -> showConfirmReceivedDialog()
+                else -> { /* shouldn't reach here */ }
+            }
         } else {
-            // Seller: action sesuai status
+            // Seller mode: action sesuai status
             handleSellerAction(order)
         }
+    }
+
+    /**
+     * Dialog konfirmasi: buyer yakin sudah terima order?
+     */
+    private fun showConfirmReceivedDialog() {
+        AlertDialog.Builder(this)
+            .setTitle(R.string.buyer_confirm_received_title)
+            .setMessage(R.string.buyer_confirm_received_message)
+            .setPositiveButton(R.string.buyer_action_yes_received) { _, _ ->
+                confirmReceived()
+            }
+            .setNegativeButton(R.string.action_cancel, null)
+            .show()
+    }
+
+    /**
+     * Buyer confirm bahwa pesanan sudah diterima.
+     */
+    private fun confirmReceived() {
+        showLoading(true)
+
+        OrderRepository.confirmReceived(
+            orderId = orderId,
+            onSuccess = {
+                Toast.makeText(this, getString(R.string.buyer_order_confirmed),
+                    Toast.LENGTH_SHORT).show()
+                loadOrderDetail()  // Reload page
+            },
+            onFailure = { errorMessage ->
+                showLoading(false)
+                Toast.makeText(this,
+                    getString(R.string.buyer_order_confirm_failed) + ": $errorMessage",
+                    Toast.LENGTH_LONG).show()
+            }
+        )
     }
 
     /**
@@ -400,8 +487,8 @@ class OrderDetailActivity : AppCompatActivity() {
                 getString(R.string.seller_order_preparing))
             OrderStatus.PREPARING -> updateStatus(order, OrderStatus.READY,
                 getString(R.string.seller_order_ready))
-            OrderStatus.READY -> updateStatus(order, OrderStatus.DELIVERED,
-                getString(R.string.seller_order_delivered))
+            OrderStatus.READY -> updateStatus(order, OrderStatus.SHIPPED,
+                getString(R.string.seller_order_shipped))
         }
     }
 

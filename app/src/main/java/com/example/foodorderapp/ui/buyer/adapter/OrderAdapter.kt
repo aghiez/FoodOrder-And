@@ -21,35 +21,39 @@ class OrderAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(order: Order) {
-            // Order ID (8 karakter terakhir biar pendek)
+            // Order ID (tampilkan 8 karakter terakhir untuk readability)
             val shortId = order.orderId.takeLast(8).uppercase()
             binding.tvOrderId.text = "Order #$shortId"
 
-            // Format tanggal
+            // Date & time
             val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale("id", "ID"))
             val timeFormat = SimpleDateFormat("HH:mm", Locale("id", "ID"))
             val date = Date(order.createdAt)
             binding.tvOrderDate.text = "${dateFormat.format(date)} • ${timeFormat.format(date)}"
 
-            // Items summary
-            val itemsText = order.items.joinToString(", ") {
-                "${it.quantity}x ${it.foodName}"
-            }
-            binding.tvOrderItems.text = itemsText
-
-            // Total
-            binding.tvOrderTotal.text = Formatter.toRupiah(order.totalAmount)
-
-            // Status badge
+            // Status badge dengan warna sesuai status
+            // Akan otomatis support SHIPPED karena getStatusLabel/Drawable/TextColor
+            // sudah di-update di OrderRepository
             binding.tvOrderStatus.apply {
                 text = OrderRepository.getStatusLabel(order.status)
                 setBackgroundResource(OrderRepository.getStatusDrawable(order.status))
                 setTextColor(OrderRepository.getStatusTextColor(order.status))
             }
 
-            // Click listener
-            binding.btnViewDetail.setOnClickListener { onOrderClick(order) }
+            // Items summary (contoh: "2x Nasi Goreng, 1x Es Teh Manis")
+            val itemsText = order.items.joinToString(", ") {
+                "${it.quantity}x ${it.foodName}"
+            }
+            binding.tvOrderItems.text = itemsText
+
+            // Total amount
+            binding.tvOrderTotal.text = Formatter.toRupiah(order.totalAmount)
+
+            // Click whole card → buka detail
             binding.root.setOnClickListener { onOrderClick(order) }
+
+            // Click button "View Detail" → buka detail
+            binding.btnViewDetail.setOnClickListener { onOrderClick(order) }
         }
     }
 
@@ -65,6 +69,9 @@ class OrderAdapter(
 
     override fun getItemCount(): Int = orders.size
 
+    /**
+     * Update list orders dan refresh adapter.
+     */
     fun updateOrders(newOrders: List<Order>) {
         orders = newOrders
         notifyDataSetChanged()
