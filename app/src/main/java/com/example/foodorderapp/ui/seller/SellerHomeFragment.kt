@@ -10,9 +10,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.foodorderapp.data.model.Order
 import com.example.foodorderapp.data.repository.SellerRepository
 import com.example.foodorderapp.databinding.FragmentSellerHomeBinding
+import com.example.foodorderapp.ui.buyer.OrderDetailActivity
 import com.example.foodorderapp.ui.seller.adapter.PendingOrderAdapter
 import com.example.foodorderapp.utils.Formatter
 import com.google.firebase.firestore.ListenerRegistration
+import android.content.Intent
 
 class SellerHomeFragment : Fragment() {
 
@@ -50,8 +52,12 @@ class SellerHomeFragment : Fragment() {
     private fun setupRecyclerView() {
         pendingOrderAdapter = PendingOrderAdapter(emptyList()) { order ->
             // TODO: Navigate to OrderDetail di Seller side (akan dibuat di C.5)
-            Toast.makeText(requireContext(),
-                "Order detail: ${order.orderId.takeLast(8)}", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(requireContext(),
+//                "Order detail: ${order.orderId.takeLast(8)}", Toast.LENGTH_SHORT).show()
+        val intent = Intent(requireContext(), OrderDetailActivity::class.java)
+            intent.putExtra(OrderDetailActivity.EXTRA_ORDER_ID, order.orderId)
+            intent.putExtra(OrderDetailActivity.EXTRA_VIEW_MODE, OrderDetailActivity.MODE_SELLER)
+            startActivity(intent)
         }
 
         binding.rvPendingOrders.apply {

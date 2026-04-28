@@ -301,4 +301,14 @@
     <string name="seller_order_address">Address</string>
     <string name="seller_order_payment">Payment</string>
 
+    <!-- Seller Order Detail -->
+    <string name="seller_detail_buyer_info">Buyer Information</string>
+    <string name="seller_detail_buyer_name">Name</string>
+    <string name="seller_detail_buyer_phone">Phone</string>
+    <string name="seller_detail_action_section">Update Status</string>
+    <string name="seller_detail_no_action">No action available for this status</string>
+    <string name="seller_detail_completed_info">This order has been completed</string>
+    <string name="seller_detail_cancelled_info">This order has been cancelled</string>
+
+
 </resources>

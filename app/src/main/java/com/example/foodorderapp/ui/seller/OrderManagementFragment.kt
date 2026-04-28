@@ -13,9 +13,11 @@ import com.example.foodorderapp.data.model.Order
 import com.example.foodorderapp.data.model.OrderStatus
 import com.example.foodorderapp.data.repository.OrderRepository
 import com.example.foodorderapp.databinding.FragmentOrderManagementBinding
+import com.example.foodorderapp.ui.buyer.OrderDetailActivity
 import com.example.foodorderapp.ui.seller.adapter.SellerOrderAdapter
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.firestore.ListenerRegistration
+import android.content.Intent
 
 class OrderManagementFragment : Fragment() {
 
@@ -49,9 +51,10 @@ class OrderManagementFragment : Fragment() {
             orders = emptyList(),
             onOrderClick = { order ->
                 // TODO: Akan ke OrderDetail di C.5.3
-                Toast.makeText(requireContext(),
-                    "Order detail: ${order.orderId.takeLast(8)}",
-                    Toast.LENGTH_SHORT).show()
+            val intent = Intent(requireContext(), OrderDetailActivity::class.java)
+                intent.putExtra(OrderDetailActivity.EXTRA_ORDER_ID, order.orderId)
+                intent.putExtra(OrderDetailActivity.EXTRA_VIEW_MODE,OrderDetailActivity.MODE_SELLER)
+                startActivity(intent)
             },
             onPrimaryAction = { order -> handlePrimaryAction(order) },
             onReject = { order -> handleReject(order) }
