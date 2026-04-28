@@ -50,9 +50,10 @@ class StoreProfileFragment : Fragment() {
 
         binding.llEditProfile.setOnClickListener {
             // TODO: Akan ke EditStoreProfileActivity di C.6.2
-            Toast.makeText(requireContext(),
-                "Edit Profile (akan ditambah di C.6.2)",
-                Toast.LENGTH_SHORT).show()
+//            Toast.makeText(requireContext(),
+//                "Edit Profile (akan ditambah di C.6.2)",
+//                Toast.LENGTH_SHORT).show()
+            startActivity(Intent(requireContext(), EditStoreProfileActivity::class.java))
         }
 
         binding.llChangePassword.setOnClickListener {

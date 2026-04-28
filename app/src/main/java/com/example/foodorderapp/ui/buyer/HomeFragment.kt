@@ -39,6 +39,9 @@ class HomeFragment : Fragment() {
     private var foodsListener: ListenerRegistration? = null
     private var categoriesListener: ListenerRegistration? = null
 
+    private var sellerStatusMap = mutableMapOf<String, Boolean>()
+    private var sellersListener: ListenerRegistration? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -53,6 +56,7 @@ class HomeFragment : Fragment() {
 
         loadUserName()
         setupRecyclerViews()
+        startListeningToSellers()
         startListeningToCategories()
         startListeningToFoods()
     }
@@ -140,6 +144,65 @@ class HomeFragment : Fragment() {
     }
 
     /**
+     * Listen real-time status open/close dari semua seller.
+     * Update sellerStatusMap dan re-apply filter saat berubah.
+     */
+    private fun startListeningToSellers() {
+        sellersListener = FirebaseHelper.firestore
+            .collection(FirebaseHelper.COLLECTION_USERS)
+            .whereEqualTo("role", "seller")
+            .addSnapshotListener { snapshot, error ->
+                if (_binding == null) return@addSnapshotListener
+
+                if (error != null) {
+                    Log.e(TAG, "Error loading sellers", error)
+                    return@addSnapshotListener
+                }
+
+                if (snapshot != null) {
+                    sellerStatusMap.clear()
+                    for (doc in snapshot.documents) {
+                        val sellerId = doc.id
+                        // Default true kalau field isOpen tidak ada (backward compat)
+                        val isOpen = doc.getBoolean("isOpen") ?: true
+                        sellerStatusMap[sellerId] = isOpen
+                    }
+
+                    Log.d(TAG, "Seller statuses loaded: ${sellerStatusMap.size} sellers")
+
+                    // Re-apply filter dengan status terbaru
+                    reapplyFoodFilter()
+                }
+            }
+    }
+
+    /**
+     * Re-apply filter ke list foods berdasarkan seller status & current category.
+     */
+    private fun reapplyFoodFilter() {
+        val currentCategory = categories.find { it.id == selectedCategoryId }
+        if (currentCategory != null) {
+            filterFoodsByCategory(currentCategory)
+        } else {
+            filteredFoods = filterByOpenSeller(allFoods)
+            foodAdapter.updateFoods(filteredFoods)
+            showEmptyState(filteredFoods.isEmpty())
+        }
+    }
+
+    /**
+     * Filter foods: hanya tampilkan menu dari seller yang OPEN.
+     */
+    private fun filterByOpenSeller(foods: List<Food>): List<Food> {
+        return foods.filter { food ->
+            // Default true kalau seller tidak ada di map (data inconsistency)
+            sellerStatusMap[food.sellerId] ?: true
+        }
+    }
+
+
+
+    /**
      * Build chips dari list categories.
      */
     private fun buildCategoryChips() {
@@ -215,15 +278,16 @@ class HomeFragment : Fragment() {
 
                     allFoods = foodList
 
+                    reapplyFoodFilter()
                     // Re-apply current filter
-                    val currentCategory = categories.find { it.id == selectedCategoryId }
-                    if (currentCategory != null) {
-                        filterFoodsByCategory(currentCategory)
-                    } else {
-                        filteredFoods = foodList
-                        foodAdapter.updateFoods(filteredFoods)
-                        showEmptyState(foodList.isEmpty())
-                    }
+//                    val currentCategory = categories.find { it.id == selectedCategoryId }
+//                    if (currentCategory != null) {
+//                        filterFoodsByCategory(currentCategory)
+//                    } else {
+//                        filteredFoods = foodList
+//                        foodAdapter.updateFoods(filteredFoods)
+//                        showEmptyState(foodList.isEmpty())
+//                    }
 
                     Log.d(TAG, "Loaded ${foodList.size} foods from Firestore")
                 }
@@ -233,11 +297,16 @@ class HomeFragment : Fragment() {
     private fun filterFoodsByCategory(category: Category) {
         selectedCategoryId = category.id
 
-        filteredFoods = if (category.id == "all") {
+        // Step 1: filter by category
+        val byCategory = if (category.id == "all") {
             allFoods
         } else {
             allFoods.filter { it.categoryId == category.id }
         }
+
+        // Step 2: filter by seller open status
+        filteredFoods = filterByOpenSeller(byCategory)
+
         foodAdapter.updateFoods(filteredFoods)
         showEmptyState(filteredFoods.isEmpty())
     }
@@ -259,6 +328,8 @@ class HomeFragment : Fragment() {
         foodsListener = null
         categoriesListener?.remove()
         categoriesListener = null
+        sellersListener?.remove()
+        sellersListener = null
         _binding = null
     }
 }

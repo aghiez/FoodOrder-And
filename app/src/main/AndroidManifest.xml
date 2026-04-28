@@ -74,6 +74,10 @@
             android:name=".ui.seller.AddEditMenuActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".ui.seller.EditStoreProfileActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>

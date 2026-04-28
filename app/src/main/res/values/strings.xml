@@ -352,4 +352,33 @@
     <string name="store_loading">Loading store info...</string>
     <string name="store_load_failed">Failed to load store info</string>
 
+    <!-- Edit Store Profile -->
+    <string name="edit_store_title">Edit Store Profile</string>
+    <string name="edit_store_label_name">Store Name</string>
+    <string name="edit_store_hint_name">e.g. Warung Bu Aminah</string>
+    <string name="edit_store_label_description">Description</string>
+    <string name="edit_store_hint_description">Describe your store…</string>
+    <string name="edit_store_label_address">Address</string>
+    <string name="edit_store_hint_address">Full store address</string>
+    <string name="edit_store_label_phone">Phone Number</string>
+    <string name="edit_store_hint_phone">08XXXXXXXXXX</string>
+    <string name="edit_store_save">Save Changes</string>
+    <string name="edit_store_saving">Saving…</string>
+    <string name="edit_store_save_success">Profile updated successfully</string>
+
+    <!-- Validation Errors -->
+    <string name="edit_store_error_name_required">Store name is required</string>
+    <string name="edit_store_error_name_short">Store name too short (min 3 chars)</string>
+    <string name="edit_store_error_description_required">Description is required</string>
+    <string name="edit_store_error_address_required">Address is required</string>
+    <string name="edit_store_error_address_short">Address too short (min 10 chars)</string>
+    <string name="edit_store_error_phone_required">Phone is required</string>
+    <string name="edit_store_error_phone_invalid">Invalid phone format</string>
+
+    <!-- Discard Changes -->
+    <string name="edit_store_discard_title">Discard Changes?</string>
+    <string name="edit_store_discard_message">Your changes will be lost.</string>
+    <string name="edit_store_discard_confirm">Discard</string>
+
+
 </resources>
