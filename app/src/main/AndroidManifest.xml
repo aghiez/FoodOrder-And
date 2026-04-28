@@ -78,6 +78,22 @@
             android:name=".ui.seller.EditStoreProfileActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".ui.admin.AdminDashboardActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.admin.UserDetailActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.admin.AdminOrdersActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.admin.EditAdminProfileActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>

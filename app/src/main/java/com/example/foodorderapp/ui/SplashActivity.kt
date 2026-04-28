@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.foodorderapp.R
 import com.example.foodorderapp.data.model.UserRole
 import com.example.foodorderapp.data.remote.FirebaseHelper
+import com.example.foodorderapp.ui.admin.AdminDashboardActivity
 import com.example.foodorderapp.ui.auth.LoginActivity
 import com.example.foodorderapp.ui.buyer.BuyerDashboardActivity
 import com.example.foodorderapp.ui.seller.SellerDashboardActivity
@@ -67,10 +68,11 @@ class SplashActivity : AppCompatActivity() {
         val intent = when(role){
             UserRole.BUYER -> Intent(this, BuyerDashboardActivity::class.java)
             UserRole.SELLER -> Intent(this, SellerDashboardActivity::class.java)
-            UserRole.ADMIN -> Intent(this, DashboardActivity::class.java)
-            else -> Intent(this, DashboardActivity::class.java)
+            UserRole.ADMIN -> Intent(this, AdminDashboardActivity::class.java)
+            else -> Intent(this, LoginActivity::class.java)
         }
-        intent.putExtra("USER_ROLE", role)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+ //       intent.putExtra("USER_ROLE", role)
         startActivity(intent)
         finish()
     }

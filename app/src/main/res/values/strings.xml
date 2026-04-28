@@ -380,5 +380,182 @@
     <string name="edit_store_discard_message">Your changes will be lost.</string>
     <string name="edit_store_discard_confirm">Discard</string>
 
+    <!-- Admin Dashboard -->
+    <string name="admin_nav_home">Home</string>
+    <string name="admin_nav_users">Users</string>
+    <string name="admin_nav_categories">Categories</string>
+    <string name="admin_nav_profile">Profile</string>
+
+    <string name="admin_dashboard_title">Admin Panel</string>
+    <string name="admin_users_title">User Management</string>
+    <string name="admin_categories_title">Category Management</string>
+    <string name="admin_profile_title">Admin Profile</string>
+
+    <!-- Admin Home -->
+    <string name="admin_home_greeting">Welcome back, Admin</string>
+    <string name="admin_home_subtitle">Here\'s what\'s happening today</string>
+
+    <!-- Stat Cards -->
+    <string name="admin_stat_total_users">Total Users</string>
+    <string name="admin_stat_total_sellers">Total Sellers</string>
+    <string name="admin_stat_orders_today">Orders Today</string>
+    <string name="admin_stat_revenue_today">Revenue Today</string>
+
+    <!-- Sections -->
+    <string name="admin_section_recent_orders">Recent Orders</string>
+    <string name="admin_section_recent_orders_subtitle">Latest 5 orders across all sellers</string>
+    <string name="admin_section_new_sellers">New Sellers (7 days)</string>
+    <string name="admin_section_new_sellers_empty">No new sellers in the last 7 days</string>
+    <string name="admin_section_recent_orders_empty">No orders yet today</string>
+    <string name="admin_view_all">View All</string>
+
+    <!-- Item Recent Order Card -->
+    <string name="admin_item_order_by">By</string>
+
+    <!-- User Management -->
+    <string name="users_title">User Management</string>
+    <string name="users_count">%1$d users total</string>
+    <string name="users_search_hint">Search by name or email…</string>
+
+    <!-- Tabs -->
+    <string name="users_tab_all">All</string>
+    <string name="users_tab_buyers">Buyers</string>
+    <string name="users_tab_sellers">Sellers</string>
+    <string name="users_tab_admins">Admins</string>
+
+    <!-- Role Labels -->
+    <string name="users_role_buyer">Buyer</string>
+    <string name="users_role_seller">Seller</string>
+    <string name="users_role_admin">Admin</string>
+
+    <!-- Status -->
+    <string name="users_status_active">Active</string>
+    <string name="users_status_suspended">Suspended</string>
+
+    <!-- Empty State -->
+    <string name="users_empty_title">No users found</string>
+    <string name="users_empty_subtitle">Try a different search or filter</string>
+
+    <!-- User Actions -->
+    <string name="users_action_view_detail">View Detail</string>
+    <string name="users_action_promote">Promote to Seller</string>
+    <string name="users_action_demote">Demote to Buyer</string>
+    <string name="users_action_suspend">Suspend Account</string>
+    <string name="users_action_activate">Activate Account</string>
+
+    <!-- Confirmation Dialogs -->
+    <string name="users_confirm_promote_title">Promote to Seller?</string>
+    <string name="users_confirm_promote_message">This user will have access to seller features and can manage menus.</string>
+    <string name="users_confirm_demote_title">Demote to Buyer?</string>
+    <string name="users_confirm_demote_message">All menus owned by this seller will be hidden from buyers. This action can be reversed.</string>
+    <string name="users_confirm_suspend_title">Suspend Account?</string>
+    <string name="users_confirm_suspend_message">User will not be able to login. All their menus/orders will be inaccessible.</string>
+    <string name="users_confirm_activate_title">Activate Account?</string>
+    <string name="users_confirm_activate_message">User will be able to login again.</string>
+
+    <!-- Toasts -->
+    <string name="users_promoted_success">User promoted to Seller</string>
+    <string name="users_demoted_success">User demoted to Buyer</string>
+    <string name="users_suspended_success">Account suspended</string>
+    <string name="users_activated_success">Account activated</string>
+    <string name="users_action_failed">Failed to update user</string>
+    <string name="users_cant_modify_self">You cannot modify your own account</string>
+    <string name="users_cant_modify_admin">Cannot modify admin accounts</string>
+
+    <!-- Detail Page -->
+    <string name="users_detail_title">User Details</string>
+    <string name="users_detail_info">Account Info</string>
+    <string name="users_detail_phone">Phone</string>
+    <string name="users_detail_email">Email</string>
+    <string name="users_detail_role">Role</string>
+    <string name="users_detail_joined">Joined</string>
+    <string name="users_detail_status">Status</string>
+    <string name="users_detail_actions">Actions</string>
+    <string name="users_detail_seller_info">Store Info</string>
+    <string name="users_detail_store_name">Store Name</string>
+    <string name="users_detail_address">Address</string>
+
+    <!-- Category Management -->
+    <string name="categories_title">Category Management</string>
+    <string name="categories_count">%1$d categories</string>
+    <string name="categories_empty_title">No categories yet</string>
+    <string name="categories_empty_subtitle">Tap + to add a new category</string>
+
+    <!-- Add/Edit Category -->
+    <string name="category_form_add_title">Add New Category</string>
+    <string name="category_form_edit_title">Edit Category</string>
+    <string name="category_form_name_label">Category Name</string>
+    <string name="category_form_name_hint">e.g. Makanan Berat</string>
+    <string name="category_form_order_label">Display Order</string>
+    <string name="category_form_order_hint">e.g. 1</string>
+    <string name="category_form_order_helper">Lower number appears first</string>
+    <string name="category_form_save">Save Category</string>
+    <string name="category_form_update">Update Category</string>
+    <string name="category_form_saving">Saving…</string>
+
+    <!-- Validation -->
+    <string name="category_error_name_required">Category name is required</string>
+    <string name="category_error_name_short">Name too short (min 2 chars)</string>
+    <string name="category_error_order_required">Order is required</string>
+    <string name="category_error_order_invalid">Order must be a positive number</string>
+    <string name="category_error_name_exists">Category with this name already exists</string>
+
+    <!-- Toasts -->
+    <string name="category_added_success">Category added</string>
+    <string name="category_updated_success">Category updated</string>
+    <string name="category_deleted_success">Category deleted</string>
+    <string name="category_action_failed">Failed to perform action</string>
+
+    <!-- Delete Confirmation -->
+    <string name="category_delete_title">Delete Category?</string>
+    <string name="category_delete_message">This action cannot be undone. Make sure no menus are using this category.</string>
+    <string name="category_delete_message_with_menus">⚠️ %1$d menu(s) are using this category. Deleting will leave them without a category. Continue?</string>
+    <string name="category_delete_confirm">Delete</string>
+
+    <!-- Item Actions -->
+    <string name="category_action_edit">Edit</string>
+    <string name="category_action_delete">Delete</string>
+    <string name="category_used_by">Used by</string>
+    <string name="category_used_count">%1$d menus</string>
+
+    <!-- Admin Order Monitoring -->
+    <string name="admin_orders_title">All Orders</string>
+    <string name="admin_orders_count">%1$d orders total</string>
+    <string name="admin_orders_search_hint">Search by order ID or buyer name…</string>
+
+    <!-- Tabs -->
+    <string name="admin_orders_tab_all">All</string>
+    <string name="admin_orders_tab_pending">Pending</string>
+    <string name="admin_orders_tab_active">Active</string>
+    <string name="admin_orders_tab_completed">Completed</string>
+
+    <!-- Empty State -->
+    <string name="admin_orders_empty_title">No orders found</string>
+    <string name="admin_orders_empty_subtitle">Try a different filter or search</string>
+
+    <!-- View All link di Admin Home -->
+    <string name="admin_view_all_orders">View all orders</string>
+
+    <!-- Admin Profile -->
+    <string name="admin_profile_role_label">Administrator</string>
+    <string name="admin_profile_account_info">Account Information</string>
+    <string name="admin_profile_quick_actions">Quick Actions</string>
+    <string name="admin_profile_total_users_managed">Users in System</string>
+    <string name="admin_profile_total_orders_monitored">Orders Monitored</string>
+    <string name="admin_profile_account">Account</string>
+    <string name="admin_profile_edit">Edit Profile</string>
+    <string name="admin_profile_change_password">Change Password</string>
+    <string name="admin_profile_logout">Logout</string>
+    <string name="admin_profile_manage_users">Manage Users</string>
+    <string name="admin_profile_manage_categories">Manage Categories</string>
+    <string name="admin_profile_view_orders">View All Orders</string>
+
+    <!-- Logout -->
+    <string name="admin_logout_title">Logout?</string>
+    <string name="admin_logout_message">Are you sure you want to logout from admin panel?</string>
+
+    <!-- Edit Admin Profile -->
+    <string name="edit_admin_title">Edit Admin Profile</string>
+    <string name="edit_admin_save_success">Profile updated successfully</string>
 
 </resources>
