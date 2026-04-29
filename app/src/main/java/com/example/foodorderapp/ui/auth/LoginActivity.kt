@@ -13,9 +13,11 @@ import com.example.foodorderapp.databinding.ActivityLoginBinding
 import com.example.foodorderapp.ui.admin.AdminDashboardActivity
 import com.example.foodorderapp.ui.buyer.BuyerDashboardActivity
 import com.example.foodorderapp.ui.seller.SellerDashboardActivity
+import com.example.foodorderapp.utils.ActivityTransitionHelper
 import com.example.foodorderapp.utils.ErrorHandler
 import com.example.foodorderapp.utils.NetworkUtil
 import com.example.foodorderapp.utils.SnackbarHelper
+import com.example.foodorderapp.utils.ValidationHelper
 
 class LoginActivity : AppCompatActivity() {
 
@@ -27,6 +29,12 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setupClickListeners()
+        setupRealtimeValidation()
+    }
+
+    private fun setupRealtimeValidation() {
+        ValidationHelper.attachEmailValidator(binding.etEmail)
+        // Password validation skip — user mungkin re-type
     }
 
     private fun setupClickListeners() {
@@ -36,6 +44,8 @@ class LoginActivity : AppCompatActivity() {
 
         binding.tvRegister.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
+
+            ActivityTransitionHelper.slideForward(this)
         }
 
         binding.tvForgotPassword.setOnClickListener {

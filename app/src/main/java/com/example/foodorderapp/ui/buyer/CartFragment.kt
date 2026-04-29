@@ -13,6 +13,7 @@ import com.example.foodorderapp.data.model.CartItem
 import com.example.foodorderapp.data.repository.CartRepository
 import com.example.foodorderapp.databinding.FragmentCartBinding
 import com.example.foodorderapp.ui.buyer.adapter.CartAdapter
+import com.example.foodorderapp.utils.ActivityTransitionHelper
 import com.example.foodorderapp.utils.Formatter
 import com.google.firebase.firestore.ListenerRegistration
 

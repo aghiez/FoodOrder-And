@@ -9,6 +9,9 @@ import com.example.foodorderapp.R
 import com.example.foodorderapp.data.remote.FirebaseHelper
 import com.example.foodorderapp.data.repository.ReviewRepository
 import com.example.foodorderapp.databinding.ActivityWriteReviewBinding
+import com.example.foodorderapp.utils.ErrorHandler
+import com.example.foodorderapp.utils.SnackbarHelper
+import com.example.foodorderapp.utils.NetworkUtil
 
 class WriteReviewActivity : AppCompatActivity() {
 
@@ -134,13 +137,24 @@ class WriteReviewActivity : AppCompatActivity() {
 
         val comment = binding.etComment.text.toString().trim()
 
+        // Cek koneksi internet
+        if (!NetworkUtil.isOnline(this)) {
+            SnackbarHelper.showNoInternet(binding.root) {
+                submitReview()  // Retry
+            }
+            return
+        }
+
         showLoading(true)
 
         // Get current user name for buyerName field
         val userId = FirebaseHelper.getCurrentUserId()
         if (userId == null) {
             showLoading(false)
-            Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show()
+            SnackbarHelper.showError(
+                view = binding.root,
+                message = "User not logged in"
+            )
             return
         }
 
@@ -160,22 +174,33 @@ class WriteReviewActivity : AppCompatActivity() {
                     rating = currentRating,
                     comment = comment,
                     onSuccess = {
-                        Toast.makeText(this,
-                            getString(R.string.write_review_success),
-                            Toast.LENGTH_SHORT).show()
-                        finish()
+                        SnackbarHelper.showSuccess(
+                            view = binding.root,
+                            message = getString(R.string.write_review_success)
+                        )
+                        binding.root.postDelayed({
+                                finish()
+                            },800)
                     },
                     onFailure = { errorMessage ->
                         showLoading(false)
-                        Toast.makeText(this,
-                            getString(R.string.write_review_failed) + ": $errorMessage",
-                            Toast.LENGTH_LONG).show()
+
+                        val friendlyMessage = ErrorHandler.getFriendlyMessage(this, errorMessage)
+                        SnackbarHelper.showErrorWithRetry(
+                            view = binding.root,
+                            message = friendlyMessage
+                        ) { submitReview() }
                     }
                 )
             }
             .addOnFailureListener { e ->
                 showLoading(false)
-                Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+
+                val friendlyMessage = ErrorHandler.getFriendlyMessage(this, e)
+                SnackbarHelper.showError(
+                    view = binding.root,
+                    message = friendlyMessage
+                )
             }
     }
 

@@ -22,6 +22,9 @@ import com.example.foodorderapp.data.repository.MenuRepository
 import com.example.foodorderapp.databinding.ActivityAddEditMenuBinding
 import com.example.foodorderapp.utils.ImageUtils
 import com.example.foodorderapp.data.remote.CloudinaryHelper
+import com.example.foodorderapp.utils.ErrorHandler
+import com.example.foodorderapp.utils.NetworkUtil
+import com.example.foodorderapp.utils.SnackbarHelper
 
 class AddEditMenuActivity : AppCompatActivity() {
 
@@ -311,17 +314,28 @@ class AddEditMenuActivity : AppCompatActivity() {
     private fun saveMenu() {
         if (!validateInputs()) return
 
+        if(!NetworkUtil.isOnline(this)){
+            SnackbarHelper.showNoInternet(binding.root) {
+                saveMenu()
+            }
+            return
+        }
+
         val name = binding.etName.text.toString().trim()
         val description = binding.etDescription.text.toString().trim()
         val price = binding.etPrice.text.toString().trim().toDouble()
         val stock = binding.etStock.text.toString().trim().toInt()
 
-        showLoading(true, "Saving...")
+        showLoading(true, "Processing...")
 
-        if (isEditMode) {
-            handleEditSave()
+        if(selectedImageUri != null){
+            uploadNewImageThenUpdate(name, description, price, stock)
         } else {
-            handleAddSave()
+            if (isEditMode) {
+                updateFirestoreOnly(name, description, price, stock, null)
+            } else {
+                saveToFirestore(existingImageUrl)
+            }
         }
     }
 
@@ -419,6 +433,55 @@ class AddEditMenuActivity : AppCompatActivity() {
                     Toast.LENGTH_LONG).show()
             }
         )
+
+        val onSuccess: () -> Unit = {
+            SnackbarHelper.showSuccess(
+                view = binding.root,
+                message = if(isEditMode) "Menu Updated!" else "Menu Added!"
+            )
+            binding.root.postDelayed({
+                finish()
+            },800)
+        }
+        val onFailure: (String) -> Unit = { errorMessage ->
+            showLoading(false, null)
+
+            val friendlyMeessage = ErrorHandler.getFriendlyMessage(this, errorMessage)
+            SnackbarHelper.showErrorWithRetry(
+                view = binding.root,
+                message = friendlyMeessage
+            ) {
+                saveMenu() }
+        }
+
+        if(isEditMode){
+            val newImageUrl = null
+            MenuRepository.updateMenu(
+                foodId = foodId!!,
+                name = name,
+                description = description,
+                categoryId = selectedCategoryId,
+                price = price,
+                stock = stock,
+                imageUrl = newImageUrl ?: existingImageUrl,
+                onSuccess = {
+                    //sukses
+                },
+                onFailure = {
+                    //gagal
+                }
+            )
+        }else{
+            MenuRepository.addMenu(
+                food = newFood,
+                onSuccess = {
+                    //sukses
+                },
+                onFailure = {
+                    //gagal
+                }
+            )
+        }
     }
 
     /**

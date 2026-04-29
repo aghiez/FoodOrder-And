@@ -2,25 +2,26 @@ package com.example.foodorderapp.ui.auth
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Patterns
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.foodorderapp.R
+import com.example.foodorderapp.data.model.Seller
 import com.example.foodorderapp.data.model.User
 import com.example.foodorderapp.data.model.UserRole
-import com.example.foodorderapp.data.model.Seller
 import com.example.foodorderapp.data.remote.FirebaseHelper
 import com.example.foodorderapp.databinding.ActivityRegisterBinding
-import com.example.foodorderapp.ui.DashboardActivity
 import com.example.foodorderapp.ui.buyer.BuyerDashboardActivity
 import com.example.foodorderapp.ui.seller.SellerDashboardActivity
+import com.example.foodorderapp.utils.ErrorHandler
+import com.example.foodorderapp.utils.NetworkUtil
+import com.example.foodorderapp.utils.SnackbarHelper
+import com.example.foodorderapp.utils.ValidationHelper
 
 class RegisterActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityRegisterBinding
-    private var selectedRole: String = UserRole.BUYER  // default
+    private var selectedRole: String = UserRole.BUYER
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,6 +29,7 @@ class RegisterActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setupClickListeners()
+        setupRealtimeValidation()
     }
 
     private fun setupClickListeners() {
@@ -44,8 +46,24 @@ class RegisterActivity : AppCompatActivity() {
         }
 
         binding.tvLogin.setOnClickListener {
-            finish()  // kembali ke LoginActivity
+            finish()
         }
+    }
+
+    /**
+     * Setup real-time validation untuk semua field.
+     * Error muncul saat user ngetik, bukan tunggu submit.
+     */
+    private fun setupRealtimeValidation() {
+        ValidationHelper.attachNameValidator(binding.etName, minLength = 3)
+        ValidationHelper.attachEmailValidator(binding.etEmail)
+        ValidationHelper.attachPhoneValidator(binding.etPhone)
+        ValidationHelper.attachPasswordValidator(binding.etPassword)
+        ValidationHelper.attachConfirmPasswordValidator(
+            passwordField = binding.etPassword,
+            confirmPasswordField = binding.etConfirmPassword
+        )
+        ValidationHelper.attachPhoneValidator((binding.etPhone))
     }
 
     private fun selectRole(role: String) {
@@ -82,9 +100,18 @@ class RegisterActivity : AppCompatActivity() {
         val email = binding.etEmail.text.toString().trim()
         val phone = binding.etPhone.text.toString().trim()
         val password = binding.etPassword.text.toString().trim()
+        val confirmPassword = binding.etConfirmPassword.text.toString().trim()
 
-        // Validasi
-        if (!validateInput(name, email, phone, password)) return
+        // Validasi input (submit-time, complement real-time validation)
+        if (!validateInput(name, email, phone, password, confirmPassword)) return
+
+        // Cek koneksi internet
+        if (!NetworkUtil.isOnline(this)) {
+            SnackbarHelper.showNoInternet(binding.root) {
+                performRegister()  // Retry
+            }
+            return
+        }
 
         showLoading(true)
 
@@ -97,23 +124,31 @@ class RegisterActivity : AppCompatActivity() {
                     saveUserToFirestore(userId, name, email, phone)
                 } else {
                     showLoading(false)
-                    Toast.makeText(this, "Registration failed", Toast.LENGTH_SHORT).show()
+                    SnackbarHelper.showError(
+                        view = binding.root,
+                        message = getString(R.string.error_unknown)
+                    )
                 }
             }
             .addOnFailureListener { exception ->
                 showLoading(false)
-                val errorMessage = when {
-                    exception.message?.contains("email address is already") == true ->
-                        "Email already registered"
-                    exception.message?.contains("weak") == true ->
-                        "Password too weak"
-                    else -> "Registration failed: ${exception.message}"
+
+                val friendlyMessage = ErrorHandler.getFriendlyMessage(this, exception)
+                SnackbarHelper.showErrorWithRetry(
+                    view = binding.root,
+                    message = friendlyMessage
+                ) {
+                    performRegister()
                 }
-                Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show()
             }
     }
 
-    private fun saveUserToFirestore(userId: String, name: String, email: String, phone: String) {
+    private fun saveUserToFirestore(
+        userId: String,
+        name: String,
+        email: String,
+        phone: String
+    ) {
         val currentTime = System.currentTimeMillis()
 
         val user = User(
@@ -133,7 +168,6 @@ class RegisterActivity : AppCompatActivity() {
             .document(userId)
             .set(user)
             .addOnSuccessListener {
-                // Jika role seller, buat juga document di sellers collection
                 if (selectedRole == UserRole.SELLER) {
                     createSellerDocument(userId, name, phone, currentTime)
                 } else {
@@ -142,17 +176,27 @@ class RegisterActivity : AppCompatActivity() {
             }
             .addOnFailureListener { exception ->
                 showLoading(false)
-                // Hapus user di Auth jika gagal save ke Firestore (rollback)
+
+                // Rollback: hapus user di Auth karena gagal save ke Firestore
                 FirebaseHelper.auth.currentUser?.delete()
-                Toast.makeText(this, "Failed to save data: ${exception.message}",
-                    Toast.LENGTH_LONG).show()
+
+                val friendlyMessage = ErrorHandler.getFriendlyMessage(this, exception)
+                SnackbarHelper.showError(
+                    view = binding.root,
+                    message = friendlyMessage
+                )
             }
     }
 
-    private fun createSellerDocument(userId: String, name: String, phone: String, time: Long) {
+    private fun createSellerDocument(
+        userId: String,
+        name: String,
+        phone: String,
+        time: Long
+    ) {
         val seller = Seller(
             userId = userId,
-            storeName = "$name's Store",  // default
+            storeName = "$name's Store",
             storeDescription = "",
             storeAddress = "",
             storePhone = phone,
@@ -172,54 +216,74 @@ class RegisterActivity : AppCompatActivity() {
             .addOnSuccessListener {
                 finishRegistration()
             }
-            .addOnFailureListener {
+            .addOnFailureListener { exception ->
                 showLoading(false)
-                Toast.makeText(this, "Failed to create seller profile",
-                    Toast.LENGTH_SHORT).show()
+
+                val friendlyMessage = ErrorHandler.getFriendlyMessage(this, exception)
+                SnackbarHelper.showError(
+                    view = binding.root,
+                    message = friendlyMessage
+                )
             }
     }
 
     private fun finishRegistration() {
         showLoading(false)
-        Toast.makeText(this, getString(R.string.msg_register_success),
-            Toast.LENGTH_SHORT).show()
-        navigateToDashboard()
+        SnackbarHelper.showSuccess(
+            view = binding.root,
+            message = getString(R.string.msg_register_success)
+        )
+        // Delay sebentar agar Snackbar terlihat sebelum navigate
+        binding.root.postDelayed({
+            navigateToDashboard()
+        }, 800)
     }
 
-    private fun validateInput(name: String, email: String, phone: String, password: String): Boolean {
-        if (name.isEmpty()) {
-            binding.etName.error = getString(R.string.error_name_empty)
+    private fun validateInput(
+        name: String,
+        email: String,
+        phone: String,
+        password: String,
+        confirmPassword: String
+    ): Boolean {
+        // Pakai ValidationHelper untuk consistency
+        val nameResult = ValidationHelper.validateName(name, minLength = 3)
+        if (!nameResult.isValid) {
+            binding.etName.error = nameResult.errorMessage
             binding.etName.requestFocus()
             return false
         }
 
-        if (email.isEmpty()) {
-            binding.etEmail.error = getString(R.string.error_email_empty)
+        val emailResult = ValidationHelper.validateEmail(email)
+        if (!emailResult.isValid) {
+            binding.etEmail.error = emailResult.errorMessage
             binding.etEmail.requestFocus()
             return false
         }
 
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            binding.etEmail.error = getString(R.string.error_email_invalid)
-            binding.etEmail.requestFocus()
-            return false
-        }
-
-        if (phone.isEmpty()) {
-            binding.etPhone.error = getString(R.string.error_phone_empty)
+        val phoneResult = ValidationHelper.validatePhone(phone)
+        if (!phoneResult.isValid) {
+            binding.etPhone.error = phoneResult.errorMessage
             binding.etPhone.requestFocus()
             return false
         }
 
-        if (password.isEmpty()) {
-            binding.etPassword.error = getString(R.string.error_password_empty)
+        val passwordResult = ValidationHelper.validatePassword(password)
+        if (!passwordResult.isValid) {
+            binding.etPassword.error = passwordResult.errorMessage
             binding.etPassword.requestFocus()
             return false
         }
 
-        if (password.length < 6) {
-            binding.etPassword.error = getString(R.string.error_password_short)
-            binding.etPassword.requestFocus()
+        if (confirmPassword.isEmpty()) {
+            binding.etConfirmPassword.error = "Confirm password is required"
+            binding.etConfirmPassword.requestFocus()
+            return false
+        }
+
+        if (confirmPassword != password) {
+            binding.etConfirmPassword.error = "Passwords don't match"
+            binding.etConfirmPassword.requestFocus()
             return false
         }
 
@@ -233,10 +297,10 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun navigateToDashboard() {
-        val intent = when(selectedRole){
+        val intent = when (selectedRole) {
             UserRole.BUYER -> Intent(this, BuyerDashboardActivity::class.java)
             UserRole.SELLER -> Intent(this, SellerDashboardActivity::class.java)
-            else -> Intent(this, DashboardActivity::class.java)
+            else -> Intent(this, BuyerDashboardActivity::class.java)
         }
         intent.putExtra("USER_ROLE", selectedRole)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
