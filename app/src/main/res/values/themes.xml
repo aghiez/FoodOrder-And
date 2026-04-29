@@ -22,11 +22,11 @@
         <item name="android:fontFamily">sans-serif</item>
     </style>
 
-    <!-- Splash Screen Theme -->
-    <style name="Theme.FoodOrderApp.Splash" parent="Theme.FoodOrderApp">
-        <item name="android:statusBarColor">@color/primary</item>
-        <item name="android:windowFullscreen">true</item>
-    </style>
+<!--    &lt;!&ndash; Splash Screen Theme &ndash;&gt;-->
+<!--    <style name="Theme.FoodOrderApp.Splash" parent="Theme.FoodOrderApp">-->
+<!--        <item name="android:statusBarColor">@color/primary</item>-->
+<!--        <item name="android:windowFullscreen">true</item>-->
+<!--    </style>-->
 
     <style name="ButtonPrimary" parent="Widget.AppCompat.Button">
         <item name="android:background">@drawable/bg_button_primary</item>
@@ -41,6 +41,16 @@
         <item name="textAllCaps">false</item>
         <item name="android:textSize">14sp</item>
         <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- Theme untuk SplashActivity -->
+    <style name="Theme.FoodOrderApp.Splash" parent="Theme.FoodOrderApp">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@color/primary_dark</item>
     </style>
 
 </resources>

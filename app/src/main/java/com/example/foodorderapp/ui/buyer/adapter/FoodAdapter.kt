@@ -8,6 +8,7 @@ import com.example.foodorderapp.R
 import com.example.foodorderapp.data.model.Food
 import com.example.foodorderapp.databinding.ItemFoodBinding
 import com.example.foodorderapp.utils.Formatter
+import android.view.View
 
 class FoodAdapter(
     private var foods: List<Food>,
@@ -31,6 +32,21 @@ class FoodAdapter(
                 .placeholder(R.drawable.ic_food)
                 .error(R.drawable.ic_food)
                 .into(binding.ivFoodImage)
+
+            // Display rating
+            if (food.totalReviews > 0) {
+                // Format: ⭐ 4.5 (12)
+                binding.tvFoodRating.text = String.format(
+                    "⭐ %.1f (%d)",
+                    food.rating,
+                    food.totalReviews
+                )
+                binding.tvFoodRating.visibility = View.VISIBLE
+            } else {
+                // Belum ada review
+                binding.tvFoodRating.text = "No reviews"
+                binding.tvFoodRating.visibility = View.VISIBLE
+            }
 
             // Click listener
             binding.root.setOnClickListener {

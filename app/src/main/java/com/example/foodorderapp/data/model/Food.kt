@@ -15,6 +15,7 @@ data class Food(
     val isAvailable: Boolean = true,
     val stock: Int = 0,
     val rating: Double = 0.0,
+    val totalReviews: Int = 0,
     val totalSold: Int = 0,
     val createdAt: Long = 0L,
     val updatedAt: Long = 0L

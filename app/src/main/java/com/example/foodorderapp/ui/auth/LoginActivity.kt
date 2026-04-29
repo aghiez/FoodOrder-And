@@ -10,10 +10,12 @@ import com.example.foodorderapp.R
 import com.example.foodorderapp.data.model.UserRole
 import com.example.foodorderapp.data.remote.FirebaseHelper
 import com.example.foodorderapp.databinding.ActivityLoginBinding
-import com.example.foodorderapp.ui.DashboardActivity
 import com.example.foodorderapp.ui.admin.AdminDashboardActivity
 import com.example.foodorderapp.ui.buyer.BuyerDashboardActivity
 import com.example.foodorderapp.ui.seller.SellerDashboardActivity
+import com.example.foodorderapp.utils.ErrorHandler
+import com.example.foodorderapp.utils.NetworkUtil
+import com.example.foodorderapp.utils.SnackbarHelper
 
 class LoginActivity : AppCompatActivity() {
 
@@ -37,8 +39,7 @@ class LoginActivity : AppCompatActivity() {
         }
 
         binding.tvForgotPassword.setOnClickListener {
-            // TODO: Implement forgot password (Tahap berikutnya)
-            Toast.makeText(this, "Feature coming soon", Toast.LENGTH_SHORT).show()
+            SnackbarHelper.showInfo(binding.root, "Feature coming soon")
         }
     }
 
@@ -46,8 +47,16 @@ class LoginActivity : AppCompatActivity() {
         val email = binding.etEmail.text.toString().trim()
         val password = binding.etPassword.text.toString().trim()
 
-        // Validasi
+        // Validasi input
         if (!validateInput(email, password)) return
+
+        // Cek koneksi internet sebelum hit Firebase
+        if (!NetworkUtil.isOnline(this)) {
+            SnackbarHelper.showNoInternet(binding.root) {
+                performLogin()  // Retry callback
+            }
+            return
+        }
 
         // Tampilkan loading
         showLoading(true)
@@ -60,21 +69,25 @@ class LoginActivity : AppCompatActivity() {
                     fetchUserRoleAndNavigate(userId)
                 } else {
                     showLoading(false)
-                    Toast.makeText(this, "Login failed", Toast.LENGTH_SHORT).show()
+                    SnackbarHelper.showError(
+                        view = binding.root,
+                        message = getString(R.string.error_unknown)
+                    )
                 }
             }
             .addOnFailureListener { exception ->
                 showLoading(false)
-                val errorMessage = when {
-                    exception.message?.contains("password") == true ->
-                        "Wrong password"
-                    exception.message?.contains("no user record") == true ->
-                        "Email not registered"
-                    exception.message?.contains("badly formatted") == true ->
-                        "Invalid email format"
-                    else -> "Login failed: ${exception.message}"
+
+                // Convert technical error ke user-friendly message
+                val friendlyMessage = ErrorHandler.getFriendlyMessage(this, exception)
+
+                // Show Snackbar dengan retry button
+                SnackbarHelper.showErrorWithRetry(
+                    view = binding.root,
+                    message = friendlyMessage
+                ) {
+                    performLogin()  // Retry
                 }
-                Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show()
             }
     }
 
@@ -85,19 +98,44 @@ class LoginActivity : AppCompatActivity() {
             .get()
             .addOnSuccessListener { document ->
                 showLoading(false)
+
                 if (document.exists()) {
                     val role = document.getString("role") ?: UserRole.BUYER
-                    Toast.makeText(this, getString(R.string.msg_login_success),
-                        Toast.LENGTH_SHORT).show()
+                    val isActive = document.getBoolean("isActive") ?: true
+
+                    // Cek apakah account suspended (dari E.7 / Tahap 5 D.3)
+                    if (!isActive) {
+                        FirebaseHelper.signOut()
+                        SnackbarHelper.showError(
+                            view = binding.root,
+                            message = getString(R.string.error_auth_user_disabled)
+                        )
+                        return@addOnSuccessListener
+                    }
+
+                    SnackbarHelper.showSuccess(
+                        view = binding.root,
+                        message = getString(R.string.msg_login_success)
+                    )
                     navigateToDashboard(role)
                 } else {
-                    Toast.makeText(this, "User data not found", Toast.LENGTH_SHORT).show()
+                    SnackbarHelper.showError(
+                        view = binding.root,
+                        message = "User data not found"
+                    )
                     FirebaseHelper.signOut()
                 }
             }
-            .addOnFailureListener {
+            .addOnFailureListener { exception ->
                 showLoading(false)
-                Toast.makeText(this, "Failed to fetch user data", Toast.LENGTH_SHORT).show()
+
+                val friendlyMessage = ErrorHandler.getFriendlyMessage(this, exception)
+                SnackbarHelper.showErrorWithRetry(
+                    view = binding.root,
+                    message = friendlyMessage
+                ) {
+                    fetchUserRoleAndNavigate(userId)  // Retry
+                }
             }
     }
 

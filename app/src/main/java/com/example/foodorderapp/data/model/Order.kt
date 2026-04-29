@@ -11,6 +11,7 @@ data class Order(
     val notes: String = "",
     val paymentMethod: String = "",
     val status: String = "pending",
+    val isReviewed: Boolean = false,
     val createdAt: Long = 0L,
     val updatedAt: Long = 0L,
     val completedAt: Long = 0L

@@ -20,6 +20,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <!-- Hero Image + Back Button -->
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -48,12 +49,14 @@
 
             </FrameLayout>
 
+            <!-- Info Section -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="20dp">
 
+                <!-- Food Name -->
                 <TextView
                     android:id="@+id/tvFoodName"
                     android:layout_width="match_parent"
@@ -63,49 +66,70 @@
                     android:textStyle="bold"
                     tools:text="Nasi Goreng Spesial" />
 
+                <!-- Stats Row: Rating · Sold · Stock -->
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="6dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
                     <ImageView
                         android:layout_width="16dp"
                         android:layout_height="16dp"
-                        android:src="@drawable/ic_star"
-                        android:contentDescription="Rating"
-                        app:tint="@color/warning" />
+                        android:src="@drawable/ic_star_filled"
+                        android:contentDescription="Rating star" />
 
                     <TextView
-                        android:id="@+id/tvFoodRating"
+                        android:id="@+id/tvDetailRating"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:textColor="@color/text_primary"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        tools:text="4.5" />
+
+                    <TextView
+                        android:id="@+id/tvDetailReviewCount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
                         android:textColor="@color/text_secondary"
-                        android:textSize="13sp"
-                        tools:text="4.5" />
+                        android:textSize="12sp"
+                        tools:text="(12)" />
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="12dp"
+                        android:layout_marginHorizontal="10dp"
+                        android:background="@color/border" />
 
                     <TextView
-                        android:id="@+id/tvFoodSold"
+                        android:id="@+id/tvDetailSold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
                         android:textColor="@color/text_secondary"
-                        android:textSize="13sp"
-                        tools:text="• 120 sold" />
+                        android:textSize="12sp"
+                        tools:text="120 sold" />
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="12dp"
+                        android:layout_marginHorizontal="10dp"
+                        android:background="@color/border" />
 
                     <TextView
-                        android:id="@+id/tvFoodStock"
+                        android:id="@+id/tvDetailStock"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
                         android:textColor="@color/text_secondary"
-                        android:textSize="13sp"
-                        tools:text="• Stock: 50" />
+                        android:textSize="12sp"
+                        tools:text="Stock: 150" />
 
                 </LinearLayout>
 
+                <!-- Price -->
                 <TextView
                     android:id="@+id/tvFoodPrice"
                     android:layout_width="wrap_content"
@@ -122,6 +146,7 @@
                     android:layout_marginTop="20dp"
                     android:background="@color/border" />
 
+                <!-- Seller -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -146,6 +171,7 @@
                     android:layout_marginTop="16dp"
                     android:background="@color/border" />
 
+                <!-- Description -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -163,7 +189,73 @@
                     android:lineSpacingExtra="2dp"
                     android:textColor="@color/text_secondary"
                     android:textSize="14sp"
-                    tools:text="Nasi goreng dengan telur, ayam, dan acar segar. Pedas sedang." />
+                    tools:text="Nasi goreng dengan telur, ayam, dan acar segar." />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@color/border" />
+
+                <!-- Reviews Section (DI DALAM ScrollView) -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/review_section_title"
+                        android:textColor="@color/text_primary"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvReviewSummary"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp"
+                        tools:text="12 reviews" />
+
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvReviews"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:nestedScrollingEnabled="false"
+                    tools:itemCount="2"
+                    tools:listitem="@layout/item_review" />
+
+                <TextView
+                    android:id="@+id/tvNoReviews"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:padding="20dp"
+                    android:text="@string/review_no_reviews"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+
+                <TextView
+                    android:id="@+id/tvNoReviewsSubtitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/review_no_reviews_subtitle"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="11sp"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
 
                 <Space
                     android:layout_width="match_parent"
@@ -175,6 +267,7 @@
 
     </ScrollView>
 
+    <!-- Bottom Bar: Quantity + Add to Cart -->
     <LinearLayout
         android:id="@+id/bottomLayout"
         android:layout_width="match_parent"
@@ -224,7 +317,7 @@
 
         </LinearLayout>
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnAddToCart"
             android:layout_width="0dp"
             android:layout_height="48dp"

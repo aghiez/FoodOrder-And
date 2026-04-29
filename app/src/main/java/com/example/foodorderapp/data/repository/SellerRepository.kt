@@ -331,5 +331,43 @@ object SellerRepository {
     }
 
 
+    /**
+     * Calculate average rating untuk semua menu seller.
+     * Dipakai di StoreProfile untuk display rating toko.
+     */
+    fun calculateStoreRating(
+        onSuccess: (avgRating: Double, totalReviews: Int) -> Unit,
+        onFailure: (String) -> Unit
+    ) {
+        val sellerId = FirebaseHelper.getCurrentUserId()
+        if (sellerId == null) {
+            onFailure("User not logged in")
+            return
+        }
+
+        // Query semua reviews untuk seller ini
+        FirebaseHelper.firestore
+            .collection(FirebaseHelper.COLLECTION_REVIEWS)
+            .whereEqualTo("sellerId", sellerId)
+            .get()
+            .addOnSuccessListener { documents ->
+                val totalReviews = documents.size()
+
+                if (totalReviews == 0) {
+                    onSuccess(0.0, 0)
+                    return@addOnSuccessListener
+                }
+
+                val sumRating = documents.documents.sumOf {
+                    (it.getLong("rating") ?: 0L).toInt()
+                }
+                val avgRating = sumRating.toDouble() / totalReviews
+
+                onSuccess(avgRating, totalReviews)
+            }
+            .addOnFailureListener { e ->
+                onFailure(e.message ?: "Failed to calculate store rating")
+            }
+    }
 
 }

@@ -168,21 +168,37 @@ class StoreProfileFragment : Fragment() {
     }
 
     private fun loadStoreStats() {
+        // Existing: total revenue & total orders
         SellerRepository.calculateStoreStats(
             onSuccess = { totalRevenue, totalOrders ->
                 if (_binding == null) return@calculateStoreStats
 
                 binding.tvTotalRevenue.text = Formatter.toRupiah(totalRevenue)
                 binding.tvTotalOrders.text = "$totalOrders orders"
-
-                // Rating: untuk sekarang hardcoded, akan implement di Tahap 6
-                binding.tvRating.text = "⭐ - (no reviews yet)"
             },
             onFailure = { _ ->
                 if (_binding == null) return@calculateStoreStats
 
                 binding.tvTotalRevenue.text = "Rp 0"
                 binding.tvTotalOrders.text = "0 orders"
+            }
+        )
+
+        // BARU: Calculate store rating
+        SellerRepository.calculateStoreRating(
+            onSuccess = { avgRating, totalReviews ->
+                if (_binding == null) return@calculateStoreRating
+
+                if (totalReviews > 0) {
+                    binding.tvRating.text = String.format("⭐ %.1f (%d reviews)",
+                        avgRating, totalReviews)
+                } else {
+                    binding.tvRating.text = "⭐ - (no reviews yet)"
+                }
+            },
+            onFailure = { _ ->
+                if (_binding == null) return@calculateStoreRating
+
                 binding.tvRating.text = "⭐ -"
             }
         )

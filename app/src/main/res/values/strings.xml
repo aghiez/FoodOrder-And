@@ -558,4 +558,66 @@
     <string name="edit_admin_title">Edit Admin Profile</string>
     <string name="edit_admin_save_success">Profile updated successfully</string>
 
+    <!-- Reviews & Rating -->
+    <string name="review_section_title">Reviews</string>
+    <string name="review_no_reviews">No reviews yet</string>
+    <string name="review_no_reviews_subtitle">Be the first to review this menu</string>
+    <string name="review_count">%1$d reviews</string>
+    <string name="review_avg_rating">%1$.1f average</string>
+
+    <!-- Write Review -->
+    <string name="write_review_title">Write a Review</string>
+    <string name="write_review_for">Reviewing</string>
+    <string name="write_review_rating_label">How was your experience?</string>
+    <string name="write_review_rating_hint">Tap a star to rate</string>
+    <string name="write_review_comment_label">Share your thoughts</string>
+    <string name="write_review_comment_hint">Tell others what you liked or didn\'t like…</string>
+    <string name="write_review_submit">Submit Review</string>
+    <string name="write_review_submitting">Submitting…</string>
+    <string name="write_review_success">Thank you for your review!</string>
+    <string name="write_review_failed">Failed to submit review</string>
+
+    <!-- Validation -->
+    <string name="review_error_rating_required">Please give a rating</string>
+    <string name="review_error_comment_short">Comment too short (min 5 chars)</string>
+
+    <!-- Star Labels -->
+    <string name="rating_1_star">Very Poor</string>
+    <string name="rating_2_stars">Poor</string>
+    <string name="rating_3_stars">Average</string>
+    <string name="rating_4_stars">Good</string>
+    <string name="rating_5_stars">Excellent</string>
+
+    <!-- Action di OrdersFragment -->
+    <string name="orders_action_write_review">Write Review</string>
+    <string name="orders_action_review_submitted">Review submitted</string>
+
+    <!-- Item Review -->
+    <string name="review_anonymous">Anonymous</string>
+
+    <!-- Splash Screen -->
+    <string name="app_name_branded">FoodOrder</string>
+    <string name="app_tagline">Order food, anytime, anywhere</string>
+    <string name="app_loading">Loading…</string>
+    <string name="app_version">v1.0</string>
+
+    <!-- Error Messages -->
+    <string name="error_no_internet">No internet connection. Please check your network.</string>
+    <string name="error_timeout">Request timed out. Please try again.</string>
+    <string name="error_server">Server error. Please try again later.</string>
+    <string name="error_permission_denied">You don\'t have permission to do this.</string>
+    <string name="error_not_found">Item not found. It may have been deleted.</string>
+    <string name="error_invalid_data">Invalid data. Please check your input.</string>
+    <string name="error_auth_invalid">Invalid email or password.</string>
+    <string name="error_auth_email_used">Email already registered. Try login instead.</string>
+    <string name="error_auth_weak_password">Password too weak. Use at least 6 characters.</string>
+    <string name="error_auth_user_disabled">This account has been disabled.</string>
+    <string name="error_auth_too_many">Too many failed attempts. Try again later.</string>
+    <string name="error_unknown">Something went wrong. Please try again.</string>
+
+    <!-- Action -->
+    <string name="action_retry">Retry</string>
+    <string name="action_dismiss">Dismiss</string>
+    <string name="action_check_connection">Check Connection</string>
+
 </resources>

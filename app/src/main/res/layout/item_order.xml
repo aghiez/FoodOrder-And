@@ -117,6 +117,20 @@
 
         </LinearLayout>
 
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnWriteReview"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_button_primary"
+            android:text="@string/orders_action_write_review"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>

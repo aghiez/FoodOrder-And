@@ -29,4 +29,5 @@
 
     <!-- Status Bar -->
     <color name="status_bar">#5849C7</color>
+<!--    <color name="primary_dark">#5A48E0</color>-->
 </resources>

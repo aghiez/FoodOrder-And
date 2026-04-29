@@ -13,6 +13,7 @@ import com.example.foodorderapp.data.repository.OrderRepository
 import com.example.foodorderapp.databinding.FragmentOrdersBinding
 import com.example.foodorderapp.ui.buyer.adapter.OrderAdapter
 import com.google.firebase.firestore.ListenerRegistration
+import com.example.foodorderapp.ui.buyer.WriteReviewActivity
 
 class OrdersFragment : Fragment() {
 
@@ -40,14 +41,44 @@ class OrdersFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        orderAdapter = OrderAdapter(emptyList()) { order ->
-            navigateToOrderDetail(order)
-        }
+        orderAdapter = OrderAdapter(
+            orders = emptyList(),
+            onOrderClick = { order ->
+                // Existing: buka detail
+                val intent = Intent(requireContext(), OrderDetailActivity::class.java)
+                intent.putExtra(OrderDetailActivity.EXTRA_ORDER_ID, order.orderId)
+                startActivity(intent)
+            },
+            onWriteReviewClick = { order ->
+                // BARU: buka WriteReviewActivity
+                handleWriteReview(order)
+            }
+        )
 
         binding.rvOrders.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = orderAdapter
         }
+    }
+
+    /**
+     * Handle write review click. Pakai item pertama dari order.
+     */
+    private fun handleWriteReview(order: Order) {
+        if (order.items.isEmpty()) {
+            Toast.makeText(requireContext(),
+                "No items to review", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val firstItem = order.items.first()
+
+        val intent = Intent(requireContext(), WriteReviewActivity::class.java)
+        intent.putExtra(WriteReviewActivity.EXTRA_ORDER_ID, order.orderId)
+        intent.putExtra(WriteReviewActivity.EXTRA_FOOD_ID, firstItem.foodId)
+        intent.putExtra(WriteReviewActivity.EXTRA_FOOD_NAME, firstItem.foodName)
+        intent.putExtra(WriteReviewActivity.EXTRA_SELLER_ID, order.sellerId)
+        startActivity(intent)
     }
 
     private fun startListeningToOrders() {
