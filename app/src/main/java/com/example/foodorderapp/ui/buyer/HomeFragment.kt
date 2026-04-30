@@ -19,6 +19,8 @@ import com.google.firebase.firestore.ListenerRegistration
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.example.foodorderapp.R
+import com.example.foodorderapp.utils.ActivityTransitionHelper
+import androidx.core.content.ContextCompat
 
 class HomeFragment : Fragment() {
 
@@ -59,7 +61,24 @@ class HomeFragment : Fragment() {
         startListeningToSellers()
         startListeningToCategories()
         startListeningToFoods()
+//        setupSwipeRefresh()
     }
+
+//    private fun setupSwipeRefresh() {
+//        binding.swipeRefresh.setColorSchemeColors(
+//            ContextCompat.getColor(requireContext(), R.color.primary)
+//        )
+//        binding.swipeRefresh.setOnRefreshListener {
+//            refreshData()
+//        }
+//    }
+//
+//    private fun refreshData() {
+//        binding.swipeRefresh.postDelayed({
+//            binding.swipeRefresh.isRefreshing = false
+//        },1000)
+//    }
+
 
     private fun loadUserName() {
         val userId = FirebaseHelper.getCurrentUserId() ?: return
@@ -92,6 +111,11 @@ class HomeFragment : Fragment() {
             val intent = Intent(requireContext(), FoodDetailActivity::class.java)
             intent.putExtra(FoodDetailActivity.EXTRA_FOOD, food)
             startActivity(intent)
+
+            activity?.let {
+                ActivityTransitionHelper.slideUp(it)
+            }
+
         }
         binding.rvFoods.apply {
             layoutManager = LinearLayoutManager(requireContext())

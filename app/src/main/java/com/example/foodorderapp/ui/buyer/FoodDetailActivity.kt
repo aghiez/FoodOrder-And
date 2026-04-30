@@ -14,6 +14,7 @@ import com.example.foodorderapp.data.repository.CartRepository
 import com.example.foodorderapp.data.repository.ReviewRepository
 import com.example.foodorderapp.databinding.ActivityFoodDetailBinding
 import com.example.foodorderapp.ui.buyer.adapter.ReviewAdapter
+import com.example.foodorderapp.utils.ActivityTransitionHelper
 import com.example.foodorderapp.utils.Formatter
 import com.google.firebase.firestore.ListenerRegistration
 
@@ -96,7 +97,10 @@ class FoodDetailActivity : AppCompatActivity() {
     }
 
     private fun setupListeners() {
-        binding.btnBack.setOnClickListener { finish() }
+        binding.btnBack.setOnClickListener {
+            finish()
+            ActivityTransitionHelper.slideDown(this)
+        }
 
         binding.btnDecrease.setOnClickListener {
             if (quantity > 1) {
